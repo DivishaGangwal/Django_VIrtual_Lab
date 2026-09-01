@@ -1,0 +1,161 @@
+{% extends 'virtual_lab/base_lab.html' %}
+{% load static %}
+
+{% block title %}Laboratory Procedure{% endblock %}
+
+{% block content %}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row">
+    <span class="badge badge-primary">Step 03 of 06</span>
+    <span class="badge badge-slate">Laboratory Guidelines</span>
+  </div>
+  <h1 class="lab-page-title">
+    <span>📋</span> Laboratory Procedure & Workflow
+  </h1>
+  <p class="lab-page-description">
+    Follow this structured, 9-step experimental protocol to conduct the virtual laboratory simulation and complete the experiment successfully.
+  </p>
+</div>
+
+<!-- Vertical Interactive Timeline -->
+<div class="lab-card" style="margin-bottom: 2.5rem;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">🧪</div>
+      <span>Experimental Execution Protocol</span>
+    </div>
+    <span class="badge badge-primary">9 Step Procedure</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1.5rem; position: relative; padding: 1rem 0;">
+
+    <!-- Timeline item 1 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; box-shadow: 0 0 0 4px var(--primary-100);">
+        1
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Open the Simulation Workbench</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Navigate to the interactive simulation page by clicking the <strong>"Simulation"</strong> tab in the navigation ribbon or the button at the bottom of this procedure.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 2 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        2
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Select or Upload a CSV Dataset</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Either drag-and-drop a custom <code>.csv</code> file into the dropzone or choose from the three built-in educational datasets (<em>Student Marks</em>, <em>Weather Telemetry</em>, or <em>Server Metrics</em>).
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 3 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        3
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Observe Django Backend File Validation</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          The backend automatically verifies that the uploaded file contains a valid <code>.csv</code> extension, is non-empty, and does not exceed the 5 MB memory threshold.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 4 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        4
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Inspect Django Stream Ingestion & csv.DictReader</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Review the live <strong>Request-Response Pipeline Animator</strong> and the <strong>Code Inspector Card</strong> to see how <code>io.StringIO</code> wraps raw byte streams and converts them into Python dictionaries.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 5 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        5
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Preview Inferred Schema & Top Rows</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Examine the auto-detected column names, data types (<span class="badge badge-primary">int</span>, <span class="badge badge-success">float</span>, <span class="badge badge-warning">str</span>), and the first 5 records in the preview table.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 6 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        6
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Perform Pure-Python Statistical Analysis</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Select any numerical column from the dropdown to calculate <strong>Mean, Median, Mode, Min, Max, Sum, and Count</strong> computed using standard Python arithmetic and the built-in <code>statistics</code> module.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 7 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        7
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Generate and Configure Visualizations</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Configure X-axis and Y-axis mappings and switch between <strong>Bar, Line, Pie, and Histogram</strong> charts powered by Chart.js.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 8 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        8
+      </div>
+      <div style="background: var(--slate-50); border: var(--border-light); padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: var(--slate-900); margin-bottom: 0.35rem;">Record Laboratory Observations</h4>
+        <p style="color: var(--slate-600); font-size: 0.925rem; margin-bottom: 0;">
+          Navigate to the <strong>Observations</strong> page to review the auto-generated summary report, write student inferences, and print the lab sheet.
+        </p>
+      </div>
+    </div>
+
+    <!-- Timeline item 9 -->
+    <div style="display: flex; gap: 1.25rem; align-items: flex-start;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--success-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+        9
+      </div>
+      <div style="background: var(--success-100); border: 1px solid #a7f3d0; padding: 1.25rem; border-radius: var(--radius-md); flex: 1;">
+        <h4 style="color: #065f46; margin-bottom: 0.35rem;">Complete the Post-Lab Assessment & Quiz</h4>
+        <p style="color: #047857; font-size: 0.925rem; margin-bottom: 0;">
+          Answer 10 Multiple-Choice Questions to test your understanding of Django file uploads, stream decoding, and pure-Python CSV processing.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Navigation Footer -->
+<div class="lab-nav-footer">
+  <a href="{% url 'virtual_lab:theory' %}" class="btn btn-secondary">
+    ◀ Back to Step 2: Theory
+  </a>
+  <a href="{% url 'virtual_lab:simulation' %}" class="btn btn-success btn-lg">
+    Launch Step 4: Simulation Workbench ➔
+  </a>
+</div>
+{% endblock %}

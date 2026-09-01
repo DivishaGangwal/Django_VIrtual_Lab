@@ -1,0 +1,52 @@
+{% extends 'virtual_lab/base_lab.html' %}
+{% load static %}
+
+{% block title %}Observations & Report{% endblock %}
+
+{% block content %}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row">
+    <span class="badge badge-primary">Step 05 of 06</span>
+    <span class="badge badge-slate">Observation Sheet</span>
+  </div>
+  <h1 class="lab-page-title">
+    <span>📝</span> Laboratory Observations & Findings
+  </h1>
+  <p class="lab-page-description">
+    Review the auto-generated summary statistics for your analyzed CSV dataset, document your experimental inferences, and generate a printable lab report.
+  </p>
+</div>
+
+<div class="lab-card" style="margin-bottom: 2rem;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">📑</div>
+      <span>Dataset Statistical Observations</span>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">
+      🖨️ Print Observation Sheet
+    </button>
+  </div>
+  
+  <p style="color: var(--slate-600);">
+    This section summarizes the mathematical metrics extracted by Django's pure-Python calculation engine.
+  </p>
+
+  <div class="callout callout-success">
+    <div class="callout-title">Observation Table Ready</div>
+    <div class="callout-content">
+      Dataset metadata and statistical distribution summaries will be fully compiled here upon executing the simulation workbench.
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Footer -->
+<div class="lab-nav-footer">
+  <a href="{% url 'virtual_lab:simulation' %}" class="btn btn-secondary">
+    ◀ Back to Step 4: Simulation
+  </a>
+  <a href="{% url 'virtual_lab:quiz' %}" class="btn btn-primary btn-lg">
+    Proceed to Step 6: Post-Lab Quiz ➔
+  </a>
+</div>
+{% endblock %}

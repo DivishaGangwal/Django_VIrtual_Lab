@@ -1,0 +1,3 @@
+"""
+Virtual Lab application package.
+"""

@@ -1,0 +1,201 @@
+{% extends 'virtual_lab/base_lab.html' %}
+{% load static %}
+
+{% block title %}Simulation Workbench{% endblock %}
+
+{% block content %}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row">
+    <span class="badge badge-primary">Step 04 of 06</span>
+    <span class="badge badge-success">Interactive Workbench</span>
+  </div>
+  <h1 class="lab-page-title">
+    <span>🔬</span> Simulation Workbench: CSV Ingestion & Analysis
+  </h1>
+  <p class="lab-page-description">
+    Upload a CSV file or load an educational sample to observe how Django decodes byte streams, processes data without Pandas, and renders dynamic visualizations.
+  </p>
+</div>
+
+<!-- Section G: Django Request-Response Pipeline Visualizer -->
+<div class="pipeline-visualizer-card" id="pipelineVisualizer">
+  <div class="pipeline-header">
+    <div class="pipeline-title">
+      <span>⚡</span> Django Request-Response Pipeline Execution Tracker
+    </div>
+    <span class="badge badge-primary" id="pipelineStatusBadge">Ready for Ingestion</span>
+  </div>
+  
+  <div class="pipeline-nodes-track">
+    <div class="pipeline-node active" id="pNode1">
+      <div class="pipeline-node-icon">🌐</div>
+      <div class="pipeline-node-name">1. Client Request</div>
+      <div class="pipeline-node-desc">multipart/form-data</div>
+    </div>
+    <div class="pipeline-arrow">➔</div>
+    <div class="pipeline-node" id="pNode2">
+      <div class="pipeline-node-icon">📥</div>
+      <div class="pipeline-node-name">2. request.FILES</div>
+      <div class="pipeline-node-desc">InMemoryUploadedFile</div>
+    </div>
+    <div class="pipeline-arrow">➔</div>
+    <div class="pipeline-node" id="pNode3">
+      <div class="pipeline-node-icon">🐍</div>
+      <div class="pipeline-node-name">3. csv.DictReader</div>
+      <div class="pipeline-node-desc">io.StringIO Stream</div>
+    </div>
+    <div class="pipeline-arrow">➔</div>
+    <div class="pipeline-node" id="pNode4">
+      <div class="pipeline-node-icon">📐</div>
+      <div class="pipeline-node-name">4. Pure Stats</div>
+      <div class="pipeline-node-desc">Mean, Med, Mode</div>
+    </div>
+    <div class="pipeline-arrow">➔</div>
+    <div class="pipeline-node" id="pNode5">
+      <div class="pipeline-node-icon">📊</div>
+      <div class="pipeline-node-name">5. Chart.js</div>
+      <div class="pipeline-node-desc">Canvas DOM Render</div>
+    </div>
+  </div>
+</div>
+
+<!-- Section A: Dataset Ingestion Controls -->
+<div class="dropzone-container">
+  <!-- Option 1: Drag & Drop Custom CSV -->
+  <div class="dropzone-box" id="csvDropzone">
+    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+    {% csrf_token %}
+    <div class="dropzone-icon">📁</div>
+    <div class="dropzone-text-main">Drag & Drop CSV File Here</div>
+    <div class="dropzone-text-sub">or click to browse from your computer (.csv, max 5MB)</div>
+    <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">
+      Browse Local CSV...
+    </button>
+  </div>
+
+  <!-- Option 2: Choose Preloaded Sample Dataset -->
+  <div class="sample-picker-box">
+    <div>
+      <h3 style="margin-bottom: 0.5rem; font-size: 1.15rem; color: var(--slate-900);">
+        📚 Use Built-in Educational Dataset
+      </h3>
+      <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1rem;">
+        Select one of the pre-loaded laboratory datasets to explore immediately.
+      </p>
+      <label for="sampleDatasetSelect" style="font-size: 0.8rem; font-weight: 700; color: var(--slate-700); text-transform: uppercase;">
+        Select Sample:
+      </label>
+      <select id="sampleDatasetSelect" class="sample-select-dropdown">
+        {% for s in samples %}
+          <option value="{{ s.id }}">{{ s.name }} ({{ s.filename }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="button" id="loadSampleBtn" class="btn btn-primary" style="width: 100%;">
+      ⚡ Load Sample Dataset
+    </button>
+  </div>
+</div>
+
+<!-- Status Notice Container -->
+<div id="uploadStatusNotice"></div>
+
+<!-- Section C: Under the Hood Code Inspector -->
+<div class="lab-card" style="margin-bottom: 2rem;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">🔍</div>
+      <span>Under the Hood: Django Stream Decoding</span>
+    </div>
+    <span class="badge badge-primary">Standard Library Execution</span>
+  </div>
+  <p style="color: var(--slate-600); font-size: 0.925rem;">
+    This is the exact pure-Python workflow executed in <code>virtual_lab/services/csv_parser.py</code> to parse the file without Pandas:
+  </p>
+  <div class="code-inspector-card">
+    <div class="code-inspector-body">
+      <pre><code><span class="code-cm"># 1. Capture in-memory uploaded stream from Django request</span>
+<span class="code-kw">uploaded_file</span> = request.FILES[<span class="code-str">'csv_file'</span>]
+
+<span class="code-cm"># 2. Decode raw bytes into UTF-8 text string</span>
+<span class="code-kw">decoded_text</span> = uploaded_file.read().decode(<span class="code-str">'utf-8'</span>)
+
+<span class="code-cm"># 3. Wrap in memory buffer & parse with csv.DictReader</span>
+<span class="code-kw">stream</span> = io.StringIO(decoded_text.strip())
+<span class="code-kw">reader</span> = csv.DictReader(stream)
+<span class="code-kw">dataset</span> = [<span class="code-fn">dict</span>(row) <span class="code-kw">for</span> row <span class="code-kw">in</span> reader]</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Section B: Dataset Preview (Populated by JS upon load) -->
+<div class="lab-card" id="previewCard" style="margin-bottom: 2rem; display: none;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">📊</div>
+      <span>Dataset Preview & Schema Metadata</span>
+    </div>
+    <div id="metaBadges" style="display: flex; gap: 0.5rem;"></div>
+  </div>
+
+  <div class="lab-table-container">
+    <table class="lab-table" id="previewDataTable">
+      <thead id="previewTableHead"></thead>
+      <tbody id="previewTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Navigation Footer -->
+<div class="lab-nav-footer">
+  <a href="{% url 'virtual_lab:procedure' %}" class="btn btn-secondary">
+    ◀ Back to Step 3: Procedure
+  </a>
+  <a href="{% url 'virtual_lab:observations' %}" class="btn btn-primary btn-lg">
+    Proceed to Step 5: Observations ➔
+  </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'virtual_lab/js/csv_uploader.js' %}"></script>
+<script>
+  // Simple listener to update preview on dataset load
+  window.addEventListener('lab:dataset_loaded', (e) => {
+    const data = e.detail;
+    const previewCard = document.getElementById('previewCard');
+    const metaBadges = document.getElementById('metaBadges');
+    const thead = document.getElementById('previewTableHead');
+    const tbody = document.getElementById('previewTableBody');
+
+    if (!previewCard) return;
+    previewCard.style.display = 'block';
+
+    // Meta badges
+    metaBadges.innerHTML = `
+      <span class="badge badge-primary">${data.row_count} Rows</span>
+      <span class="badge badge-success">${data.col_count} Columns</span>
+      <span class="badge badge-slate">Delimiter: '${data.delimiter}'</span>
+    `;
+
+    // Table Head
+    let headHtml = '<tr>';
+    data.headers.forEach(h => {
+      headHtml += `<th>${h}</th>`;
+    });
+    headHtml += '</tr>';
+    thead.innerHTML = headHtml;
+
+    // Table Body (Preview first 5 rows)
+    let bodyHtml = '';
+    data.preview_rows.forEach(row => {
+      bodyHtml += '<tr>';
+      data.headers.forEach(h => {
+        bodyHtml += `<td>${row[h] || '-'}</td>`;
+      });
+      bodyHtml += '</tr>';
+    });
+    tbody.innerHTML = bodyHtml;
+  });
+</script>
+{% endblock %}

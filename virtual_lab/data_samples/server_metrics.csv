@@ -1,0 +1,13 @@
+Server_Node,CPU_Utilization_Pct,RAM_Usage_Pct,Disk_IO_MBps,Latency_ms
+Node_Alpha_1,45.2,62.0,120.5,14.2
+Node_Alpha_2,78.6,84.5,245.0,28.6
+Node_Alpha_3,32.0,45.0,85.2,11.0
+Node_Beta_1,91.4,92.0,380.0,65.4
+Node_Beta_2,64.5,71.2,190.0,22.1
+Node_Beta_3,53.8,60.5,140.8,16.5
+Node_Gamma_1,82.1,88.0,290.4,35.0
+Node_Gamma_2,28.5,39.0,60.2,9.8
+Node_Gamma_3,74.0,78.5,210.0,25.4
+Node_Delta_1,89.0,91.5,340.0,52.0
+Node_Delta_2,41.2,55.0,110.5,13.8
+Node_Delta_3,68.0,73.0,175.0,20.5

@@ -1,0 +1,42 @@
+{% extends 'virtual_lab/base_lab.html' %}
+{% load static %}
+
+{% block title %}Post-Lab Quiz & Assessment{% endblock %}
+
+{% block content %}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row">
+    <span class="badge badge-primary">Step 06 of 06</span>
+    <span class="badge badge-success">Final Evaluation</span>
+  </div>
+  <h1 class="lab-page-title">
+    <span>🎯</span> Post-Lab Assessment & Knowledge Check
+  </h1>
+  <p class="lab-page-description">
+    Test your understanding of Django file handling, in-memory stream decoding, and pure-Python CSV analysis.
+  </p>
+</div>
+
+<div class="lab-card" style="margin-bottom: 2rem;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">💡</div>
+      <span>Multiple Choice Questions (10 Questions)</span>
+    </div>
+    <span class="badge badge-primary">Evaluation Mode</span>
+  </div>
+  <p style="color: var(--slate-600);">
+    Assessment engine interface ready for Developer 3's interactive 10-MCQ grading module.
+  </p>
+</div>
+
+<!-- Navigation Footer -->
+<div class="lab-nav-footer">
+  <a href="{% url 'virtual_lab:observations' %}" class="btn btn-secondary">
+    ◀ Back to Step 5: Observations
+  </a>
+  <a href="{% url 'virtual_lab:aim' %}" class="btn btn-secondary">
+    Restart Experiment (Step 1: Aim) ↺
+  </a>
+</div>
+{% endblock %}

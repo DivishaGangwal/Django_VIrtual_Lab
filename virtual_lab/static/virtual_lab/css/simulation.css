@@ -1,0 +1,291 @@
+/* ==========================================================================
+   SIMULATION WORKBENCH & PIPELINE ANIMATION STYLES
+   Dropzone, Schema Preview, Code Inspector & 5-Node Request-Response Tracker
+   ========================================================================== */
+
+/* 5-Node Django Request-Response Pipeline Visualizer */
+.pipeline-visualizer-card {
+  background: linear-gradient(135deg, var(--slate-900), #1e293b);
+  color: var(--pure-white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pipeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.pipeline-title {
+  color: var(--pure-white);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pipeline-nodes-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pipeline-node {
+  flex: 1;
+  min-width: 140px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.pipeline-node-icon {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.pipeline-node-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--slate-200);
+}
+
+.pipeline-node-desc {
+  font-size: 0.7rem;
+  color: var(--slate-400);
+}
+
+/* Node States */
+.pipeline-node.active {
+  background: rgba(37, 99, 235, 0.25);
+  border-color: var(--primary-500);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.pipeline-node.active .pipeline-node-name {
+  color: var(--accent-cyan);
+}
+
+.pipeline-node.completed {
+  background: rgba(5, 150, 105, 0.15);
+  border-color: var(--success-600);
+}
+
+.pipeline-node.completed .pipeline-node-name {
+  color: #34d399;
+}
+
+/* Arrow Connector */
+.pipeline-arrow {
+  color: var(--slate-500);
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+/* Drag-and-Drop Ingestion Dropzone */
+.dropzone-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .dropzone-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dropzone-box {
+  border: 2px dashed var(--primary-500);
+  background: var(--primary-50);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.dropzone-box:hover,
+.dropzone-box.dragover {
+  background: var(--primary-100);
+  border-color: var(--primary-700);
+  transform: scale(1.01);
+}
+
+.dropzone-icon {
+  font-size: 2.5rem;
+  color: var(--primary-600);
+}
+
+.dropzone-text-main {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.dropzone-text-sub {
+  font-size: 0.85rem;
+  color: var(--slate-500);
+}
+
+.sample-picker-box {
+  background: var(--pure-white);
+  border: var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+}
+
+.sample-select-dropdown {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--slate-300);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--slate-800);
+  background-color: var(--slate-50);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.sample-select-dropdown:focus {
+  outline: none;
+  border-color: var(--primary-600);
+  background-color: var(--pure-white);
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+/* Code Inspector Card */
+.code-inspector-card {
+  background: #1e1e2e;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow-md);
+}
+
+.code-inspector-header {
+  background: #181825;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.code-inspector-title {
+  color: #cdd6f4;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-inspector-body {
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.code-inspector-body pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #cdd6f4;
+}
+
+.code-kw { color: #cba6f7; font-weight: bold; }
+.code-fn { color: #89b4fa; }
+.code-str { color: #a6e3a1; }
+.code-cm { color: #6c7086; font-style: italic; }
+.code-cls { color: #f9e2af; }
+
+/* Inferred Data Type Tags */
+.type-tag {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  margin-left: 0.4rem;
+}
+
+.type-tag-int { background: #e0e7ff; color: #3730a3; }
+.type-tag-float { background: #dbeafe; color: #1e40af; }
+.type-tag-str { background: #fef3c7; color: #92400e; }
+.type-tag-date { background: #fae8ff; color: #86198f; }
+
+/* Statistics Metrics Chips Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.stat-chip {
+  background: var(--slate-50);
+  border: var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition-fast);
+}
+
+.stat-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-500);
+}
+
+.stat-chip-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.stat-chip-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--primary-700);
+  font-family: var(--font-heading);
+}
+
+.stat-chip-fn {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--slate-400);
+  margin-top: 0.2rem;
+}

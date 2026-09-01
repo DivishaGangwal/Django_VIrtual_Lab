@@ -1,0 +1,26 @@
+Student_ID,Student_Name,Department,Marks,Attendance_Pct,Grade
+101,Aarav Sharma,Computer Science,88.5,94.0,A
+102,Aditi Rao,Information Tech,72.0,81.5,B
+103,Rohan Verma,Computer Science,94.0,98.0,A+
+104,Pooja Nair,Electronics,65.5,75.0,C
+105,Vikram Patel,Computer Science,81.0,88.0,B+
+106,Sneha Kulkarni,Information Tech,91.5,96.0,A+
+107,Karan Mehta,Computer Science,58.0,68.5,D
+108,Divya Iyer,Electronics,79.0,85.0,B
+109,Ananya Gupta,Computer Science,86.0,91.0,A
+110,Rahul Joshi,Information Tech,74.5,82.0,B
+111,Meera Nambiar,Computer Science,95.5,99.0,A+
+112,Siddharth Das,Electronics,62.0,71.0,C
+113,Ishaan Mukherjee,Computer Science,83.0,89.5,B+
+114,Kavya Menon,Information Tech,77.5,84.0,B
+115,Aditya Chopra,Computer Science,90.0,93.5,A
+116,Riya Sen,Electronics,69.5,76.0,C
+117,Varun Kapoor,Computer Science,85.0,90.0,A
+118,Tanvi Bhat,Information Tech,88.0,92.5,A
+119,Nikhil Deshmukh,Computer Science,73.0,80.0,B
+120,Priya Sundaram,Electronics,96.0,98.5,A+
+121,Ayush Saxena,Computer Science,67.5,74.0,C
+122,Shreya Ghoshal,Information Tech,84.0,87.5,B+
+123,Harsh Vardhan,Computer Science,79.5,86.0,B
+124,Neha Reddy,Electronics,92.0,95.0,A+
+125,Manish Pandey,Computer Science,71.0,79.0,B

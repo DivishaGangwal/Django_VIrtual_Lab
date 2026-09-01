@@ -1,0 +1,226 @@
+{% extends 'virtual_lab/base_lab.html' %}
+{% load static %}
+
+{% block title %}Theory & Architecture{% endblock %}
+
+{% block content %}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row">
+    <span class="badge badge-primary">Step 02 of 06</span>
+    <span class="badge badge-slate">Theoretical Foundations</span>
+  </div>
+  <h1 class="lab-page-title">
+    <span>📖</span> Theory: Django File Handling & Stream Parsing
+  </h1>
+  <p class="lab-page-description">
+    Understand how Django receives raw multipart files from HTTP requests, how Python decodes byte streams in memory, and how data structures transform into client-side visualizations.
+  </p>
+</div>
+
+<!-- Interactive Educational Workflow Diagram -->
+<div class="lab-card" style="margin-bottom: 2.5rem; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">⚡</div>
+      <span>Complete Data Transformation Pipeline</span>
+    </div>
+    <span class="badge badge-success">Architecture Flow</span>
+  </div>
+  
+  <p style="color: var(--slate-600); margin-bottom: 1.5rem;">
+    The diagram below illustrates the exact step-by-step path a CSV file travels from the user's browser, through Django's memory stream decoders, and into interactive browser charts.
+  </p>
+
+  <!-- SVG Architecture Flowchart -->
+  <div style="width: 100%; overflow-x: auto; text-align: center; padding: 1rem 0;">
+    <svg viewBox="0 0 920 180" style="max-width: 900px; width: 100%; height: auto;" xmlns="http://www.w3.org/2000/svg">
+      <!-- Node 1: CSV File -->
+      <g>
+        <rect x="10" y="50" width="130" height="80" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+        <text x="75" y="85" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="14" fill="#1e3a8a">📁 CSV File</text>
+        <text x="75" y="105" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#64748b">Raw Disk / Client</text>
+      </g>
+
+      <!-- Arrow 1 -->
+      <path d="M 140 90 L 175 90" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+      <text x="157" y="80" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#2563eb">POST</text>
+
+      <!-- Node 2: Django Upload -->
+      <g>
+        <rect x="185" y="50" width="135" height="80" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+        <text x="252" y="85" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="13" fill="#1e3a8a">🌐 Django Upload</text>
+        <text x="252" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#475569">request.FILES</text>
+      </g>
+
+      <!-- Arrow 2 -->
+      <path d="M 320 90 L 355 90" stroke="#3b82f6" stroke-width="2"/>
+
+      <!-- Node 3: In-Memory Stream -->
+      <g>
+        <rect x="365" y="50" width="145" height="80" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+        <text x="437" y="85" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="13" fill="#065f46">📦 UploadedFile</text>
+        <text x="437" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#047857">io.StringIO stream</text>
+      </g>
+
+      <!-- Arrow 3 -->
+      <path d="M 510 90 L 545 90" stroke="#10b981" stroke-width="2"/>
+
+      <!-- Node 4: Python csv Module -->
+      <g>
+        <rect x="555" y="50" width="150" height="80" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="630" y="85" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="13" fill="#92400e">🐍 csv.DictReader</text>
+        <text x="630" y="105" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#78350f">List of Dictionaries</text>
+      </g>
+
+      <!-- Arrow 4 -->
+      <path d="M 705 90 L 740 90" stroke="#f59e0b" stroke-width="2"/>
+
+      <!-- Node 5: Chart.js Visualization -->
+      <g>
+        <rect x="750" y="50" width="155" height="80" rx="10" fill="#faf5ff" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="827" y="85" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="bold" font-size="13" fill="#581c87">📊 Chart.js Canvas</text>
+        <text x="827" y="105" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#6b21a8">Dynamic Rendering</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- Section 1: CSV Fundamentals -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; margin-bottom: 2rem;">
+  <div class="lab-card">
+    <div class="lab-card-header">
+      <div class="lab-card-title">
+        <div class="lab-card-icon">📄</div>
+        <span>1. What is a CSV File?</span>
+      </div>
+    </div>
+    <p style="color: var(--slate-700); line-height: 1.7;">
+      A <strong>Comma-Separated Values (CSV)</strong> file is a plain-text file that stores tabular data (numbers and text) according to the <strong>RFC 4180</strong> standard. Each line in the file represents a data record, and each record consists of one or more fields separated by a delimiter (commonly a comma <code>,</code>, semicolon <code>;</code>, or tab <code>\t</code>).
+    </p>
+    <div style="background: var(--slate-100); padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.825rem; color: var(--slate-800);">
+      ID,Student_Name,Marks,Grade<br>
+      101,Aarav Sharma,88.5,A<br>
+      102,Aditi Rao,72.0,B
+    </div>
+  </div>
+
+  <div class="lab-card">
+    <div class="lab-card-header">
+      <div class="lab-card-title">
+        <div class="lab-card-icon">🌍</div>
+        <span>2. Why CSV is Universally Used</span>
+      </div>
+    </div>
+    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; color: var(--slate-700);">
+      <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+        <span style="color: var(--primary-600); font-weight: bold;">•</span>
+        <span><strong>Human Readable:</strong> Can be inspected in any plain text editor without specialized software.</span>
+      </li>
+      <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+        <span style="color: var(--primary-600); font-weight: bold;">•</span>
+        <span><strong>Interoperability:</strong> Supported natively by SQL databases, spreadsheets, data science pipelines, and web servers.</span>
+      </li>
+      <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+        <span style="color: var(--primary-600); font-weight: bold;">•</span>
+        <span><strong>Zero Overhead:</strong> Lightweight without proprietary binary metadata schemas.</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Section 2: Django File Upload Architecture -->
+<div class="lab-card" style="margin-bottom: 2rem;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">⚙️</div>
+      <span>3. How Django Handles File Uploads Internally</span>
+    </div>
+    <span class="badge badge-primary">Django Request Lifecycle</span>
+  </div>
+  
+  <p style="color: var(--slate-700); line-height: 1.7;">
+    When a browser submits a form with <code>enctype="multipart/form-data"</code>, Django's <code>MultiPartParser</code> parses the incoming HTTP stream and populates the dictionary-like object <code>request.FILES</code>.
+  </p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.25rem 0;">
+    <div style="background: var(--primary-50); border: 1px solid var(--primary-100); padding: 1.25rem; border-radius: var(--radius-md);">
+      <h4 style="color: var(--primary-800); margin-bottom: 0.5rem;">1. InMemoryUploadedFile (&lt; 2.5 MB)</h4>
+      <p style="font-size: 0.875rem; color: var(--slate-700); margin-bottom: 0;">
+        For files smaller than the threshold set in <code>FILE_UPLOAD_MAX_MEMORY_SIZE</code> (default 2.5 MB), Django holds the entire file payload in memory as an <code>io.BytesIO</code> stream. This enables rapid parsing with zero disk I/O latency.
+      </p>
+    </div>
+    <div style="background: var(--slate-100); border: 1px solid var(--slate-200); padding: 1.25rem; border-radius: var(--radius-md);">
+      <h4 style="color: var(--slate-800); margin-bottom: 0.5rem;">2. TemporaryUploadedFile (&gt; 2.5 MB)</h4>
+      <p style="font-size: 0.875rem; color: var(--slate-700); margin-bottom: 0;">
+        For larger files, Django streams data chunks directly into a temporary file in the operating system's temp directory, preventing server memory starvation.
+      </p>
+    </div>
+  </div>
+
+  <div class="callout callout-warning">
+    <div class="callout-title">⚠️ Byte Stream Decoding Required</div>
+    <div class="callout-content">
+      <code>request.FILES['file'].read()</code> returns raw <strong>bytes</strong> (e.g. <code>b'ID,Name\n...'</code>). Python's <code>csv</code> module operates on <strong>text characters</strong>. Therefore, the byte stream must be decoded via <code>.decode('utf-8')</code> and wrapped in an <code>io.StringIO</code> buffer before passing to <code>csv.DictReader</code>!
+    </div>
+  </div>
+</div>
+
+<!-- Section 3: Built-in csv Module vs Pandas -->
+<div class="lab-card" style="margin-bottom: 2.5rem;">
+  <div class="lab-card-header">
+    <div class="lab-card-title">
+      <div class="lab-card-icon">🐍</div>
+      <span>4. Pure Python csv Module vs Pandas</span>
+    </div>
+    <span class="badge badge-success">Pedagogical Comparison</span>
+  </div>
+
+  <p style="color: var(--slate-700); line-height: 1.7;">
+    While industrial data science often uses Pandas (<code>pd.read_csv()</code>), learning how to read CSV files with Python's built-in <code>csv.DictReader</code> reveals the foundational mechanics of memory buffers, string encoding, dialect sniffing, and row iterators.
+  </p>
+
+  <div class="lab-table-container" style="margin-top: 1rem;">
+    <table class="lab-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Python Built-in <code>csv</code> Module</th>
+          <th>Pandas <code>pd.read_csv()</code></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>External Dependencies</strong></td>
+          <td><span class="badge badge-success">Zero (Standard Library)</span></td>
+          <td>Requires heavy C-extensions (NumPy, Pandas)</td>
+        </tr>
+        <tr>
+          <td><strong>Data Structure Returned</strong></td>
+          <td>List of standard Python <code>dict</code> or <code>list</code></td>
+          <td>Complex 2D <code>DataFrame</code> object</td>
+        </tr>
+        <tr>
+          <td><strong>Memory Footprint</strong></td>
+          <td>Extremely lightweight iterator</td>
+          <td>Large in-memory allocation</td>
+        </tr>
+        <tr>
+          <td><strong>Educational Value</strong></td>
+          <td><span class="badge badge-primary">High (Teaches core Python mechanics)</span></td>
+          <td>Black-box abstraction</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Navigation Footer -->
+<div class="lab-nav-footer">
+  <a href="{% url 'virtual_lab:aim' %}" class="btn btn-secondary">
+    ◀ Back to Step 1: Aim
+  </a>
+  <a href="{% url 'virtual_lab:procedure' %}" class="btn btn-primary btn-lg">
+    Proceed to Step 3: Procedure ➔
+  </a>
+</div>
+{% endblock %}
