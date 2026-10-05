@@ -1,23 +1,30 @@
 """
 Django settings for lab_csv_visualizer project.
 Computer Engineering Virtual Lab: Reading and Visualizing CSV Data in Django.
+
+Development defaults work out of the box. For anything beyond a local machine,
+set these environment variables instead of editing this file:
+    DJANGO_SECRET_KEY, DJANGO_DEBUG (0/1), DJANGO_ALLOWED_HOSTS (comma-separated)
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-virtual-lab-csv-visualizer-secret-key-cse-edu'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-dev-only-virtual-lab-csv-visualizer-change-me',
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,[::1]').split(',')
+    if h.strip()
+]
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +50,8 @@ ROOT_URLCONF = 'lab_csv_visualizer.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'virtual_lab' / 'templates'],
+        # App templates live in virtual_lab/templates/ and are found via APP_DIRS.
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -51,6 +59,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'virtual_lab.context_processors.lab_navigation',
             ],
         },
     },
@@ -58,8 +67,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lab_csv_visualizer.wsgi.application'
 
-# Database
-# Using SQLite for lightweight session state & quiz records
+# SQLite stores sessions (the active dataset) and quiz attempts.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -67,42 +75,33 @@ DATABASES = {
     }
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files. App static files (virtual_lab/static/) are found automatically
+# by AppDirectoriesFinder, so STATICFILES_DIRS is intentionally not set
+# (listing the same folder twice causes duplicate-file warnings in collectstatic).
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'virtual_lab' / 'static',
-]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# File Upload Configurations
-# 5 MB memory threshold (in bytes)
+# Uploads: 5 MB limit (also enforced in forms.py and in the browser).
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
-# Session Configuration
+# Sessions hold the active dataset between pages.
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 86400  # 1 day in seconds
+SESSION_COOKIE_AGE = 86400  # 1 day
+
+# Safety cap on rows kept in the session (keeps the session table small).
+LAB_MAX_ROWS = 20000
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

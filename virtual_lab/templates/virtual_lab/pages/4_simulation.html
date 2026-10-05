@@ -1,201 +1,147 @@
-{% extends 'virtual_lab/base_lab.html' %}
+{% extends 'virtual_lab/base.html' %}
 {% load static %}
-
-{% block title %}Simulation Workbench{% endblock %}
-
+{% block title %}Simulation{% endblock %}
 {% block content %}
+<div id="labApp"
+     data-upload-url="{% url 'virtual_lab:api_upload_csv' %}"
+     data-sample-url="{% url 'virtual_lab:api_load_sample' %}"
+     data-dataset-url="{% url 'virtual_lab:api_dataset' %}"
+     data-reset-url="{% url 'virtual_lab:api_reset_dataset' %}"
+     data-chart-url="{% url 'virtual_lab:api_chart_data' %}"
+     data-has-dataset="{{ has_dataset|yesno:'1,0' }}">
+
 <div class="lab-page-header">
-  <div class="lab-page-badge-row">
-    <span class="badge badge-primary">Step 04 of 06</span>
-    <span class="badge badge-success">Interactive Workbench</span>
-  </div>
-  <h1 class="lab-page-title">
-    <span>🔬</span> Simulation Workbench: CSV Ingestion & Analysis
-  </h1>
-  <p class="lab-page-description">
-    Upload a CSV file or load an educational sample to observe how Django decodes byte streams, processes data without Pandas, and renders dynamic visualizations.
-  </p>
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 4 of 6</span><span class="badge badge-success">Hands-on</span></div>
+  <h1 class="lab-page-title">Simulation Workbench</h1>
+  <p class="lab-page-description">Load a CSV, inspect what Django parsed, read the statistics and build charts.</p>
 </div>
 
-<!-- Section G: Django Request-Response Pipeline Visualizer -->
-<div class="pipeline-visualizer-card" id="pipelineVisualizer">
+<!-- Pipeline tracker -->
+<section class="pipeline-visualizer-card" aria-label="Request pipeline">
   <div class="pipeline-header">
-    <div class="pipeline-title">
-      <span>⚡</span> Django Request-Response Pipeline Execution Tracker
-    </div>
-    <span class="badge badge-primary" id="pipelineStatusBadge">Ready for Ingestion</span>
+    <h3 class="pipeline-title">⚡ Django Request → Response Pipeline</h3>
+    <span class="badge badge-slate" id="pipelineStatus">Idle</span>
   </div>
-  
   <div class="pipeline-nodes-track">
-    <div class="pipeline-node active" id="pNode1">
-      <div class="pipeline-node-icon">🌐</div>
-      <div class="pipeline-node-name">1. Client Request</div>
-      <div class="pipeline-node-desc">multipart/form-data</div>
-    </div>
-    <div class="pipeline-arrow">➔</div>
-    <div class="pipeline-node" id="pNode2">
-      <div class="pipeline-node-icon">📥</div>
-      <div class="pipeline-node-name">2. request.FILES</div>
-      <div class="pipeline-node-desc">InMemoryUploadedFile</div>
-    </div>
-    <div class="pipeline-arrow">➔</div>
-    <div class="pipeline-node" id="pNode3">
-      <div class="pipeline-node-icon">🐍</div>
-      <div class="pipeline-node-name">3. csv.DictReader</div>
-      <div class="pipeline-node-desc">io.StringIO Stream</div>
-    </div>
-    <div class="pipeline-arrow">➔</div>
-    <div class="pipeline-node" id="pNode4">
-      <div class="pipeline-node-icon">📐</div>
-      <div class="pipeline-node-name">4. Pure Stats</div>
-      <div class="pipeline-node-desc">Mean, Med, Mode</div>
-    </div>
-    <div class="pipeline-arrow">➔</div>
-    <div class="pipeline-node" id="pNode5">
-      <div class="pipeline-node-icon">📊</div>
-      <div class="pipeline-node-name">5. Chart.js</div>
-      <div class="pipeline-node-desc">Canvas DOM Render</div>
-    </div>
+    <div class="pipeline-node" data-node="1"><span class="pipeline-node-icon">🌐</span><span class="pipeline-node-name">Browser Upload</span><span class="pipeline-node-desc">FormData + CSRF</span></div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-node" data-node="2"><span class="pipeline-node-icon">📥</span><span class="pipeline-node-name">request.FILES</span><span class="pipeline-node-desc">Form validation</span></div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-node" data-node="3"><span class="pipeline-node-icon">🔤</span><span class="pipeline-node-name">Decode + Sniff</span><span class="pipeline-node-desc">bytes → str, delimiter</span></div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-node" data-node="4"><span class="pipeline-node-icon">🐍</span><span class="pipeline-node-name">csv + statistics</span><span class="pipeline-node-desc">rows, types, stats</span></div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-node" data-node="5"><span class="pipeline-node-icon">📦</span><span class="pipeline-node-name">JsonResponse</span><span class="pipeline-node-desc">session + JSON</span></div>
   </div>
-</div>
+</section>
 
-<!-- Section A: Dataset Ingestion Controls -->
+<!-- Ingestion -->
 <div class="dropzone-container">
-  <!-- Option 1: Drag & Drop Custom CSV -->
-  <div class="dropzone-box" id="csvDropzone">
-    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+  <div>
     {% csrf_token %}
-    <div class="dropzone-icon">📁</div>
-    <div class="dropzone-text-main">Drag & Drop CSV File Here</div>
-    <div class="dropzone-text-sub">or click to browse from your computer (.csv, max 5MB)</div>
-    <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">
-      Browse Local CSV...
-    </button>
+    <div class="dropzone-box" id="csvDropzone" role="button" tabindex="0" aria-label="Upload a CSV file">
+      <span class="dropzone-icon">📂</span>
+      <span class="dropzone-text-main">Drop a CSV file here or click to browse</span>
+      <span class="dropzone-text-sub">.csv only · max 5 MB · comma, semicolon, tab or pipe delimited</span>
+    </div>
+    {{ upload_form.csv_file }}
   </div>
-
-  <!-- Option 2: Choose Preloaded Sample Dataset -->
   <div class="sample-picker-box">
     <div>
-      <h3 style="margin-bottom: 0.5rem; font-size: 1.15rem; color: var(--slate-900);">
-        📚 Use Built-in Educational Dataset
-      </h3>
-      <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1rem;">
-        Select one of the pre-loaded laboratory datasets to explore immediately.
-      </p>
-      <label for="sampleDatasetSelect" style="font-size: 0.8rem; font-weight: 700; color: var(--slate-700); text-transform: uppercase;">
-        Select Sample:
-      </label>
+      <h3>Or use a built-in sample</h3>
+      <label class="field-label" for="sampleDatasetSelect" style="margin-top:1rem">Sample dataset</label>
       <select id="sampleDatasetSelect" class="sample-select-dropdown">
-        {% for s in samples %}
-          <option value="{{ s.id }}">{{ s.name }} ({{ s.filename }})</option>
-        {% endfor %}
+        {% for s in samples %}<option value="{{ s.id }}" data-description="{{ s.description }}">{{ s.name }}</option>{% endfor %}
       </select>
+      <p id="sampleDescription" style="font-size:0.9rem">{{ samples.0.description }}</p>
     </div>
-    <button type="button" id="loadSampleBtn" class="btn btn-primary" style="width: 100%;">
-      ⚡ Load Sample Dataset
-    </button>
+    <button type="button" class="btn btn-primary" id="loadSampleBtn">Load Sample</button>
   </div>
 </div>
 
-<!-- Status Notice Container -->
-<div id="uploadStatusNotice"></div>
+<div id="uploadStatusNotice" aria-live="polite"></div>
 
-<!-- Section C: Under the Hood Code Inspector -->
-<div class="lab-card" style="margin-bottom: 2rem;">
-  <div class="lab-card-header">
-    <div class="lab-card-title">
-      <div class="lab-card-icon">🔍</div>
-      <span>Under the Hood: Django Stream Decoding</span>
-    </div>
-    <span class="badge badge-primary">Standard Library Execution</span>
-  </div>
-  <p style="color: var(--slate-600); font-size: 0.925rem;">
-    This is the exact pure-Python workflow executed in <code>virtual_lab/services/csv_parser.py</code> to parse the file without Pandas:
-  </p>
-  <div class="code-inspector-card">
-    <div class="code-inspector-body">
-      <pre><code><span class="code-cm"># 1. Capture in-memory uploaded stream from Django request</span>
-<span class="code-kw">uploaded_file</span> = request.FILES[<span class="code-str">'csv_file'</span>]
-
-<span class="code-cm"># 2. Decode raw bytes into UTF-8 text string</span>
-<span class="code-kw">decoded_text</span> = uploaded_file.read().decode(<span class="code-str">'utf-8'</span>)
-
-<span class="code-cm"># 3. Wrap in memory buffer & parse with csv.DictReader</span>
-<span class="code-kw">stream</span> = io.StringIO(decoded_text.strip())
-<span class="code-kw">reader</span> = csv.DictReader(stream)
-<span class="code-kw">dataset</span> = [<span class="code-fn">dict</span>(row) <span class="code-kw">for</span> row <span class="code-kw">in</span> reader]</code></pre>
-    </div>
-  </div>
+<div id="noDatasetState" class="lab-card empty-state">
+  <div class="big">📭</div>
+  <p>No dataset loaded yet. Upload a file or load a sample to begin.</p>
 </div>
 
-<!-- Section B: Dataset Preview (Populated by JS upon load) -->
-<div class="lab-card" id="previewCard" style="margin-bottom: 2rem; display: none;">
-  <div class="lab-card-header">
-    <div class="lab-card-title">
-      <div class="lab-card-icon">📊</div>
-      <span>Dataset Preview & Schema Metadata</span>
+<div id="datasetWorkspace" class="stack is-hidden">
+  <!-- Preview -->
+  <section class="lab-card">
+    <div class="lab-card-header">
+      <div class="lab-card-title"><span class="lab-card-icon">🧾</span><span>Parsed Data Preview — <span id="datasetFilename"></span></span></div>
+      <button type="button" class="btn btn-secondary btn-sm" id="resetDatasetBtn">Clear dataset</button>
     </div>
-    <div id="metaBadges" style="display: flex; gap: 0.5rem;"></div>
-  </div>
+    <div class="dataset-meta" id="datasetMeta"></div>
+    <div class="lab-table-container"><table class="lab-table" id="previewTable"></table></div>
+    <p class="field-hint" style="margin-top:0.5rem">Showing the first rows. Yellow cells are missing values. Tags show the inferred type of each column.</p>
+  </section>
 
-  <div class="lab-table-container">
-    <table class="lab-table" id="previewDataTable">
-      <thead id="previewTableHead"></thead>
-      <tbody id="previewTableBody"></tbody>
-    </table>
-  </div>
+  <!-- Statistics -->
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🧮</span>Column Statistics (computed in Python)</div></div>
+    <div class="column-picker" id="columnPicker" role="toolbar" aria-label="Choose a column"></div>
+    <div id="columnStats"></div>
+  </section>
+
+  <!-- Chart studio -->
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">📈</span>Chart Studio</div></div>
+    <form id="chartForm" class="controls-row" onsubmit="return false;">
+      <div>
+        <label class="field-label" for="chartType">Chart type</label>
+        <select id="chartType" class="field-control">
+          <option value="bar">Bar</option>
+          <option value="line">Line</option>
+          <option value="pie">Pie</option>
+          <option value="doughnut">Doughnut</option>
+          <option value="scatter">Scatter</option>
+          <option value="histogram">Histogram</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" for="chartX">X axis / category</label>
+        <select id="chartX" class="field-control"></select>
+      </div>
+      <div id="chartYField">
+        <label class="field-label" for="chartY">Y values</label>
+        <select id="chartY" class="field-control" multiple></select>
+        <div class="field-hint">Ctrl/⌘-click to pick several</div>
+      </div>
+      <div id="chartAggField">
+        <label class="field-label" for="chartAgg">Aggregation</label>
+        <select id="chartAgg" class="field-control">
+          <option value="none">None (raw rows)</option>
+          <option value="mean">Mean</option>
+          <option value="sum">Sum</option>
+          <option value="count">Count</option>
+          <option value="min">Min</option>
+          <option value="max">Max</option>
+        </select>
+      </div>
+      <div id="chartBinsField" class="is-hidden">
+        <label class="field-label" for="chartBins">Bins</label>
+        <input id="chartBins" class="field-control" type="number" min="2" max="50" value="8">
+      </div>
+      <div><button type="button" class="btn btn-primary" id="plotBtn" style="width:100%">Plot</button></div>
+    </form>
+    <div id="chartNotice" aria-live="polite"></div>
+    <div class="chart-canvas-wrap"><canvas id="chartCanvas" aria-label="Data chart" role="img"></canvas></div>
+    <div class="chart-actions">
+      <button type="button" class="btn btn-secondary btn-sm" id="downloadChartBtn" disabled>⬇ Download PNG</button>
+      <span class="field-hint" id="chartRequestUrl"></span>
+    </div>
+  </section>
 </div>
-
-<!-- Navigation Footer -->
-<div class="lab-nav-footer">
-  <a href="{% url 'virtual_lab:procedure' %}" class="btn btn-secondary">
-    ◀ Back to Step 3: Procedure
-  </a>
-  <a href="{% url 'virtual_lab:observations' %}" class="btn btn-primary btn-lg">
-    Proceed to Step 5: Observations ➔
-  </a>
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{% static 'virtual_lab/js/lab_utils.js' %}"></script>
+<script src="{% static 'virtual_lab/js/pipeline_visualizer.js' %}"></script>
 <script src="{% static 'virtual_lab/js/csv_uploader.js' %}"></script>
-<script>
-  // Simple listener to update preview on dataset load
-  window.addEventListener('lab:dataset_loaded', (e) => {
-    const data = e.detail;
-    const previewCard = document.getElementById('previewCard');
-    const metaBadges = document.getElementById('metaBadges');
-    const thead = document.getElementById('previewTableHead');
-    const tbody = document.getElementById('previewTableBody');
-
-    if (!previewCard) return;
-    previewCard.style.display = 'block';
-
-    // Meta badges
-    metaBadges.innerHTML = `
-      <span class="badge badge-primary">${data.row_count} Rows</span>
-      <span class="badge badge-success">${data.col_count} Columns</span>
-      <span class="badge badge-slate">Delimiter: '${data.delimiter}'</span>
-    `;
-
-    // Table Head
-    let headHtml = '<tr>';
-    data.headers.forEach(h => {
-      headHtml += `<th>${h}</th>`;
-    });
-    headHtml += '</tr>';
-    thead.innerHTML = headHtml;
-
-    // Table Body (Preview first 5 rows)
-    let bodyHtml = '';
-    data.preview_rows.forEach(row => {
-      bodyHtml += '<tr>';
-      data.headers.forEach(h => {
-        bodyHtml += `<td>${row[h] || '-'}</td>`;
-      });
-      bodyHtml += '</tr>';
-    });
-    tbody.innerHTML = bodyHtml;
-  });
-</script>
+<script src="{% static 'virtual_lab/js/dataset_explorer.js' %}"></script>
+<script src="{% static 'virtual_lab/js/chart_studio.js' %}"></script>
 {% endblock %}

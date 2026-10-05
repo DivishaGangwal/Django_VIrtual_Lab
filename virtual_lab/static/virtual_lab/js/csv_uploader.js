@@ -1,151 +1,158 @@
 /**
  * CSV Uploader & Ingestion Client Controller
- * Manages drag-and-drop file uploads, sample dataset loading, and dispatches dataset events.
+ * Drag-and-drop / file-picker uploads and sample loading.
+ * On success it dispatches `lab:dataset_loaded` with the server's JSON summary.
+ *
+ * Fixes vs. the earlier version:
+ *  - Status messages are built with textContent (filenames/server messages can
+ *    no longer inject HTML → no XSS).
+ *  - API URLs come from data-* attributes rendered by {% url %}, not hardcoded.
+ *  - Re-selecting the same file works (input value is reset).
+ *  - The dropzone is keyboard accessible (Enter/Space).
+ *  - Non-JSON server errors (e.g. 403 CSRF, 500) show a readable message.
  */
-
 class CSVUploader {
-  constructor() {
+  constructor(root) {
+    this.root = root;
+    this.urls = { upload: root.dataset.uploadUrl, sample: root.dataset.sampleUrl };
     this.dropzone = document.getElementById('csvDropzone');
     this.fileInput = document.getElementById('csvFileInput');
     this.sampleSelect = document.getElementById('sampleDatasetSelect');
+    this.sampleDescription = document.getElementById('sampleDescription');
     this.loadSampleBtn = document.getElementById('loadSampleBtn');
     this.statusContainer = document.getElementById('uploadStatusNotice');
-
+    this.busy = false;
     this.initEventListeners();
   }
 
   initEventListeners() {
-    if (this.dropzone) {
-      // Drag events
-      ['dragenter', 'dragover'].forEach(eventName => {
-        this.dropzone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          this.dropzone.classList.add('dragover');
-        });
+    const dz = this.dropzone;
+    if (dz) {
+      ['dragenter', 'dragover'].forEach(evt => dz.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dz.classList.add('dragover');
+      }));
+      ['dragleave', 'drop'].forEach(evt => dz.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+      }));
+      dz.addEventListener('drop', (e) => {
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) this.handleFileUpload(files[0]);
       });
-
-      ['dragleave', 'drop'].forEach(eventName => {
-        this.dropzone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          this.dropzone.classList.remove('dragover');
-        });
-      });
-
-      this.dropzone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-          this.handleFileUpload(files[0]);
-        }
-      });
-
-      this.dropzone.addEventListener('click', () => {
-        if (this.fileInput) this.fileInput.click();
+      dz.addEventListener('click', () => this.fileInput?.click());
+      dz.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.fileInput?.click(); }
       });
     }
 
-    if (this.fileInput) {
-      this.fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-          this.handleFileUpload(e.target.files[0]);
-        }
-      });
-    }
+    this.fileInput?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) this.handleFileUpload(file);
+      e.target.value = ''; // allow picking the same file again
+    });
 
-    if (this.loadSampleBtn && this.sampleSelect) {
-      this.loadSampleBtn.addEventListener('click', () => {
-        const sampleId = this.sampleSelect.value;
-        this.loadSampleDataset(sampleId);
-      });
-    }
+    this.sampleSelect?.addEventListener('change', () => {
+      const opt = this.sampleSelect.selectedOptions[0];
+      if (this.sampleDescription && opt) this.sampleDescription.textContent = opt.dataset.description || '';
+    });
+
+    this.loadSampleBtn?.addEventListener('click', () => this.loadSampleDataset(this.sampleSelect.value));
   }
 
-  showStatus(message, type = 'info') {
-    if (!this.statusContainer) return;
-    this.statusContainer.innerHTML = `
-      <div class="callout ${type === 'error' ? 'callout-warning' : 'callout-success'}" style="margin: 1rem 0;">
-        <div class="callout-title">${type === 'error' ? '⚠️ Validation Notice' : '✓ Ingestion Successful'}</div>
-        <div class="callout-content">${message}</div>
-      </div>
-    `;
+  showStatus(type, message) {
+    const titles = { error: '⚠️ Validation Notice', success: '✓ Ingestion Successful', info: '⏳ Working…' };
+    LabUtils.notice(this.statusContainer, type, titles[type], message);
+  }
+
+  setBusy(busy) {
+    this.busy = busy;
+    if (this.loadSampleBtn) this.loadSampleBtn.disabled = busy;
+    this.dropzone?.setAttribute('aria-busy', String(busy));
+  }
+
+  step(step, name) {
+    window.dispatchEvent(new CustomEvent('lab:pipeline_step', { detail: { step, name } }));
+  }
+
+  async finishPipeline(data) {
+    const wait = (ms) => new Promise(r => setTimeout(r, ms));
+    this.step(3, 'Decode + Sniff'); await wait(250);
+    this.step(4, 'csv + statistics'); await wait(250);
+    this.step(5, 'JsonResponse');
+    window.dispatchEvent(new CustomEvent('lab:dataset_loaded', { detail: data }));
+  }
+
+  fail(message) {
+    this.showStatus('error', message);
+    window.dispatchEvent(new CustomEvent('lab:pipeline_error', { detail: { message } }));
   }
 
   async handleFileUpload(file) {
-    // 1. Client-Side Validation
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      this.showStatus('Invalid file format. Please select a valid Comma-Separated Values (.csv) file.', 'error');
-      return;
-    }
+    if (this.busy) return;
 
+    // Client-side checks are for quick feedback only; the server re-validates everything.
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      return this.fail('Invalid file format. Please select a .csv (Comma-Separated Values) file.');
+    }
+    if (file.size === 0) return this.fail('The selected file is empty (0 bytes).');
     const maxBytes = 5 * 1024 * 1024;
     if (file.size > maxBytes) {
-      this.showStatus(`File size (${(file.size / (1024*1024)).toFixed(2)} MB) exceeds the 5 MB limit.`, 'error');
-      return;
+      return this.fail(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 5 MB limit.`);
     }
 
-    if (file.size === 0) {
-      this.showStatus('The selected file is empty (0 bytes).', 'error');
-      return;
-    }
-
-    // Trigger pipeline visualizer animation stage 1 & 2
-    window.dispatchEvent(new CustomEvent('lab:pipeline_step', { detail: { step: 1, name: 'Browser Upload' } }));
-
+    window.dispatchEvent(new CustomEvent('lab:pipeline_reset'));
+    this.step(1, 'Browser Upload');
     const formData = new FormData();
     formData.append('csv_file', file);
 
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-
+    this.setBusy(true);
     try {
-      this.showStatus('Uploading and parsing CSV stream with Python csv.DictReader...', 'info');
-      window.dispatchEvent(new CustomEvent('lab:pipeline_step', { detail: { step: 2, name: 'Django request.FILES' } }));
-
-      const response = await fetch('/api/upload-csv/', {
+      this.showStatus('info', `Uploading ${file.name} and parsing it with Python's csv module…`);
+      this.step(2, 'request.FILES');
+      const { ok, data } = await LabUtils.fetchJSON(this.urls.upload, {
         method: 'POST',
-        headers: {
-          'X-CSRFToken': csrfToken,
-        },
+        headers: { 'X-CSRFToken': LabUtils.csrfToken() },
         body: formData,
       });
-
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        window.dispatchEvent(new CustomEvent('lab:pipeline_step', { detail: { step: 3, name: 'csv.DictReader' } }));
-        this.showStatus(`Successfully parsed <strong>${data.filename}</strong> (${data.row_count} rows, ${data.col_count} columns) using pure Python!`, 'success');
-        
-        // Dispatch global event for Dev 2 (Preview/Stats) and Dev 3 (Charts)
-        window.dispatchEvent(new CustomEvent('lab:dataset_loaded', { detail: data }));
+      if (ok && data.status === 'success') {
+        this.showStatus('success', `Parsed ${data.filename}: ${data.row_count} rows × ${data.col_count} columns.`);
+        await this.finishPipeline(data);
       } else {
-        this.showStatus(data.message || 'Error processing CSV file.', 'error');
+        this.fail(data.message || 'Error processing CSV file.');
       }
     } catch (err) {
-      this.showStatus('Network error connecting to Django backend: ' + err.message, 'error');
+      this.fail('Could not reach the Django server: ' + err.message);
+    } finally {
+      this.setBusy(false);
     }
   }
 
   async loadSampleDataset(sampleId) {
+    if (this.busy) return;
+    window.dispatchEvent(new CustomEvent('lab:pipeline_reset'));
+    this.step(1, 'Sample request');
+    this.setBusy(true);
     try {
-      window.dispatchEvent(new CustomEvent('lab:pipeline_step', { detail: { step: 1, name: 'Sample Load' } }));
-      this.showStatus('Loading sample dataset from disk...', 'info');
-
-      const response = await fetch(`/api/load-sample/?sample_id=${encodeURIComponent(sampleId)}`);
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        window.dispatchEvent(new CustomEvent('lab:pipeline_step', { detail: { step: 3, name: 'csv.DictReader' } }));
-        this.showStatus(`Loaded built-in dataset: <strong>${data.sample_info?.name || sampleId}</strong> (${data.row_count} rows, ${data.col_count} columns).`, 'success');
-        
-        // Dispatch global event
-        window.dispatchEvent(new CustomEvent('lab:dataset_loaded', { detail: data }));
+      this.showStatus('info', 'Loading sample dataset from the server…');
+      this.step(2, 'GET request');
+      const url = `${this.urls.sample}?sample_id=${encodeURIComponent(sampleId)}`;
+      const { ok, data } = await LabUtils.fetchJSON(url);
+      if (ok && data.status === 'success') {
+        this.showStatus('success', `Loaded ${data.sample_info?.name || sampleId}: ${data.row_count} rows × ${data.col_count} columns.`);
+        await this.finishPipeline(data);
       } else {
-        this.showStatus(data.message || 'Failed to load sample.', 'error');
+        this.fail(data.message || 'Failed to load sample.');
       }
     } catch (err) {
-      this.showStatus('Network error loading sample dataset: ' + err.message, 'error');
+      this.fail('Could not reach the Django server: ' + err.message);
+    } finally {
+      this.setBusy(false);
     }
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  window.csvUploader = new CSVUploader();
+  const root = document.getElementById('labApp');
+  if (root) window.csvUploader = new CSVUploader(root);
 });

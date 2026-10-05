@@ -1,138 +1,45 @@
-{% extends 'virtual_lab/base_lab.html' %}
-{% load static %}
-
-{% block title %}Experiment Aim & Objectives{% endblock %}
-
+{% extends 'virtual_lab/base.html' %}
+{% block title %}Aim{% endblock %}
 {% block content %}
-<!-- Hero Section -->
-<div class="lab-card lab-card-interactive" style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%); color: #ffffff; margin-bottom: 2.5rem; border: none;">
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
-    <div style="max-width: 750px;">
-      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-        <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff;">CSE-304 Web Engineering</span>
-        <span class="badge" style="background: #10b981; color: #ffffff;">Lab Experiment 04</span>
-        <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff;">⏱️ 45 Minutes</span>
-      </div>
-      <h1 style="color: #ffffff; font-size: 2.35rem; margin-bottom: 0.75rem;">Reading and Visualizing CSV Data in Django</h1>
-      <p style="color: #dbeafe; font-size: 1.15rem; line-height: 1.6; margin-bottom: 1.5rem;">
-        Master Django's internal file upload architecture, in-memory stream processing with Python's standard library, and client-side dynamic charting without third-party data manipulation abstractions.
-      </p>
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="{% url 'virtual_lab:simulation' %}" class="btn btn-success btn-lg" style="box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
-          🚀 Start Experiment
-        </a>
-        <a href="{% url 'virtual_lab:theory' %}" class="btn btn-secondary btn-lg" style="background: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.3);">
-          📖 Read Theory First
-        </a>
-      </div>
-    </div>
-    <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: var(--radius-lg); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); min-width: 240px;">
-      <h4 style="color: #ffffff; margin-bottom: 0.75rem; font-size: 1rem;">🔬 Experiment Meta</h4>
-      <p style="color: #e0e7ff; font-size: 0.875rem; margin-bottom: 0.4rem;"><strong>Framework:</strong> Django 6.x</p>
-      <p style="color: #e0e7ff; font-size: 0.875rem; margin-bottom: 0.4rem;"><strong>Engine:</strong> Python <code>csv</code> + <code>io</code></p>
-      <p style="color: #e0e7ff; font-size: 0.875rem; margin-bottom: 0.4rem;"><strong>Visualization:</strong> Chart.js 4.4</p>
-      <p style="color: #e0e7ff; font-size: 0.875rem; margin-bottom: 0;"><strong>Difficulty:</strong> Intermediate</p>
-    </div>
-  </div>
+<div class="lab-page-header">
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 1 of 6</span><span class="badge badge-slate">≈ 5 min</span></div>
+  <h1 class="lab-page-title">Aim of the Experiment</h1>
+  <p class="lab-page-description">
+    To build a Django web application that accepts a CSV file, parses it with Python's built-in
+    <code>csv</code> module, computes descriptive statistics, and visualizes the data as interactive charts.
+  </p>
 </div>
 
-<!-- Grid for Aim & Objectives -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.75rem; margin-bottom: 2rem;">
-
-  <!-- Card 1: Aim -->
-  <div class="lab-card">
-    <div class="lab-card-header">
-      <div class="lab-card-title">
-        <div class="lab-card-icon">🎯</div>
-        <span>Experiment Aim</span>
-      </div>
-      <span class="badge badge-primary">Primary Goal</span>
+<div class="stack">
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🎯</span>Learning Objectives</div></div>
+    <div class="grid-2">
+      <div class="objective-card"><span class="objective-num">1</span><div><h4>Handle file uploads</h4><p>Receive a file through a Django form, read it from <code>request.FILES</code> and validate type and size on the server.</p></div></div>
+      <div class="objective-card"><span class="objective-num">2</span><div><h4>Parse CSV without pandas</h4><p>Decode bytes, detect the delimiter with <code>csv.Sniffer</code> and read rows with the <code>csv</code> module.</p></div></div>
+      <div class="objective-card"><span class="objective-num">3</span><div><h4>Infer types &amp; compute statistics</h4><p>Classify columns as int, float, date or text and compute mean, median, standard deviation and more with <code>statistics</code>.</p></div></div>
+      <div class="objective-card"><span class="objective-num">4</span><div><h4>Visualize data</h4><p>Send aggregated JSON from a Django view to Chart.js and draw bar, line, pie, scatter and histogram charts.</p></div></div>
     </div>
-    <p style="font-size: 1rem; color: var(--slate-700); line-height: 1.7;">
-      To design and implement an educational web application using the <strong>Django web framework</strong> that accepts user-uploaded CSV files, decodes raw byte streams into tabular data structures using Python's built-in <code>csv</code> and <code>io</code> modules, calculates statistical aggregations in standard Python without Pandas, and renders dynamic interactive charts in the browser via <strong>Chart.js</strong>.
-    </p>
+  </section>
+
+  <div class="grid-2">
+    <section class="lab-card">
+      <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🧰</span>Prerequisites</div></div>
+      <ul class="prose" style="margin-left:1.25rem;color:var(--slate-600)">
+        <li>Python basics: lists, dictionaries, loops, functions</li>
+        <li>Django basics: views, URLs, templates</li>
+        <li>What a CSV (Comma-Separated Values) file looks like</li>
+      </ul>
+    </section>
+    <section class="lab-card">
+      <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🏁</span>Expected Outcome</div></div>
+      <p>By the end of this lab you will have loaded a dataset, read its statistics, produced at least two charts,
+        generated a printable observation sheet, and completed a 10-question assessment.</p>
+    </section>
   </div>
 
-  <!-- Card 2: Learning Objectives -->
-  <div class="lab-card">
-    <div class="lab-card-header">
-      <div class="lab-card-title">
-        <div class="lab-card-icon">📋</div>
-        <span>Learning Objectives</span>
-      </div>
-      <span class="badge badge-success">4 Core Outcomes</span>
-    </div>
-    <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 0.85rem;">
-      <li style="display: flex; align-items: flex-start; gap: 0.65rem;">
-        <span style="color: var(--primary-600); font-weight: bold;">01.</span>
-        <span style="color: var(--slate-700);">Understand how Django captures files through <code>request.FILES</code> and stores them as <code>InMemoryUploadedFile</code> objects.</span>
-      </li>
-      <li style="display: flex; align-items: flex-start; gap: 0.65rem;">
-        <span style="color: var(--primary-600); font-weight: bold;">02.</span>
-        <span style="color: var(--slate-700);">Learn how to decode file streams with <code>io.StringIO</code> and extract rows using <code>csv.DictReader</code>.</span>
-      </li>
-      <li style="display: flex; align-items: flex-start; gap: 0.65rem;">
-        <span style="color: var(--primary-600); font-weight: bold;">03.</span>
-        <span style="color: var(--slate-700);">Implement pure Python statistical aggregation (Mean, Median, Mode, Sum, Min, Max) using standard math and <code>statistics</code> libraries.</span>
-      </li>
-      <li style="display: flex; align-items: flex-start; gap: 0.65rem;">
-        <span style="color: var(--primary-600); font-weight: bold;">04.</span>
-        <span style="color: var(--slate-700);">Serialize processed Python data structures into clean JSON payloads consumed by Chart.js for interactive rendering.</span>
-      </li>
-    </ul>
+  <div class="callout">
+    <div class="callout-title">💡 How to use this lab</div>
+    <div class="callout-content">Work through the six steps in order using the progress bar above. The Simulation (Step 4) is the hands-on part; your dataset stays loaded while you move between pages.</div>
   </div>
-
-</div>
-
-<!-- Grid for Prerequisites & Environment Requirements -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.75rem; margin-bottom: 2.5rem;">
-
-  <!-- Prerequisites -->
-  <div class="lab-card">
-    <div class="lab-card-header">
-      <div class="lab-card-title">
-        <div class="lab-card-icon">🛠️</div>
-        <span>Prerequisites</span>
-      </div>
-      <span class="badge badge-slate">Knowledge Required</span>
-    </div>
-    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; color: var(--slate-700);">
-      <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="color: var(--success-600);">✓</span> Basic Python syntax (Lists, Dictionaries, List Comprehensions)
-      </li>
-      <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="color: var(--success-600);">✓</span> Fundamentals of HTTP GET and POST request-response cycles
-      </li>
-      <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="color: var(--success-600);">✓</span> Basic understanding of HTML forms (<code>enctype="multipart/form-data"</code>)
-      </li>
-      <li style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="color: var(--success-600);">✓</span> Familiarity with JavaScript Object Notation (JSON) format
-      </li>
-    </ul>
-  </div>
-
-  <!-- Expected Outcome -->
-  <div class="lab-card">
-    <div class="lab-card-header">
-      <div class="lab-card-title">
-        <div class="lab-card-icon">🏆</div>
-        <span>Expected Outcome</span>
-      </div>
-      <span class="badge badge-primary">Deliverables</span>
-    </div>
-    <p style="color: var(--slate-700); line-height: 1.7;">
-      Upon completing this laboratory experiment, students will be able to build a complete Django pipeline that takes raw tabular files from the client, validates and processes them in backend memory without third-party frameworks, and returns structured data to generate interactive <strong>Bar, Line, Pie, and Histogram</strong> visualizations.
-    </p>
-  </div>
-
-</div>
-
-<!-- Navigation Footer -->
-<div class="lab-nav-footer">
-  <div></div>
-  <a href="{% url 'virtual_lab:theory' %}" class="btn btn-primary btn-lg">
-    Proceed to Step 2: Theory & Concepts ➔
-  </a>
 </div>
 {% endblock %}

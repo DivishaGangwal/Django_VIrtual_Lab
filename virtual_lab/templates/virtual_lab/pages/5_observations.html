@@ -1,52 +1,91 @@
-{% extends 'virtual_lab/base_lab.html' %}
-{% load static %}
-
-{% block title %}Observations & Report{% endblock %}
-
+{% extends 'virtual_lab/base.html' %}
+{% block title %}Observations{% endblock %}
 {% block content %}
 <div class="lab-page-header">
-  <div class="lab-page-badge-row">
-    <span class="badge badge-primary">Step 05 of 06</span>
-    <span class="badge badge-slate">Observation Sheet</span>
-  </div>
-  <h1 class="lab-page-title">
-    <span>📝</span> Laboratory Observations & Findings
-  </h1>
-  <p class="lab-page-description">
-    Review the auto-generated summary statistics for your analyzed CSV dataset, document your experimental inferences, and generate a printable lab report.
-  </p>
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 5 of 6</span><span class="badge badge-slate">Auto-generated</span></div>
+  <h1 class="lab-page-title">Observation Sheet</h1>
+  <p class="lab-page-description">Generated from the dataset in your current session.</p>
 </div>
 
-<div class="lab-card" style="margin-bottom: 2rem;">
-  <div class="lab-card-header">
-    <div class="lab-card-title">
-      <div class="lab-card-icon">📑</div>
-      <span>Dataset Statistical Observations</span>
+{% if not dataset %}
+  <div class="lab-card empty-state">
+    <div class="big">📭</div>
+    <p>No dataset loaded yet. Load one on the Simulation page, then come back.</p>
+    <a class="btn btn-primary" href="{% url 'virtual_lab:simulation' %}">Go to Simulation</a>
+  </div>
+{% else %}
+<div class="stack">
+  <div class="no-print" style="display:flex;gap:0.6rem;flex-wrap:wrap">
+    <button type="button" class="btn btn-primary" onclick="window.print()">🖨 Print / Save as PDF</button>
+    <a class="btn btn-secondary" href="{% url 'virtual_lab:export_observations' %}">⬇ Download statistics (CSV)</a>
+  </div>
+
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">📋</span>Experiment Details</div></div>
+    <div class="grid-2">
+      <div class="lab-table-container"><table class="lab-table"><tbody>
+        <tr><th>Dataset</th><td>{{ dataset.filename }}</td></tr>
+        <tr><th>Source</th><td>{% if dataset.source == 'sample' %}Built-in sample{% else %}Uploaded by student{% endif %}</td></tr>
+        <tr><th>Delimiter detected</th><td>{{ delimiter_label }}</td></tr>
+        <tr><th>Generated on</th><td>{% now "d M Y, H:i" %}</td></tr>
+      </tbody></table></div>
+      <div class="stats-grid" style="margin:0">
+        <div class="stat-chip"><div class="stat-chip-label">Rows</div><div class="stat-chip-val">{{ dataset.row_count }}</div><div class="stat-chip-fn">len(rows)</div></div>
+        <div class="stat-chip"><div class="stat-chip-label">Columns</div><div class="stat-chip-val">{{ dataset.col_count }}</div><div class="stat-chip-fn">len(headers)</div></div>
+        <div class="stat-chip"><div class="stat-chip-label">Missing cells</div><div class="stat-chip-val">{{ dataset.missing_values_count }}</div><div class="stat-chip-fn">is_missing()</div></div>
+        <div class="stat-chip"><div class="stat-chip-label">Completeness</div><div class="stat-chip-val">{{ stats.completeness_pct }}%</div><div class="stat-chip-fn">filled / total</div></div>
+      </div>
     </div>
-    <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">
-      🖨️ Print Observation Sheet
-    </button>
-  </div>
-  
-  <p style="color: var(--slate-600);">
-    This section summarizes the mathematical metrics extracted by Django's pure-Python calculation engine.
-  </p>
+    {% if dataset.ragged_rows_count %}<div class="callout callout-warning"><div class="callout-title">⚠️ Irregular rows</div><div class="callout-content">{{ dataset.ragged_rows_count }} row(s) had a different number of fields than the header and were padded/trimmed.</div></div>{% endif %}
+    {% if dataset.truncated %}<div class="callout callout-warning"><div class="callout-title">⚠️ Truncated</div><div class="callout-content">Only the first {{ dataset.row_count }} rows were kept.</div></div>{% endif %}
+  </section>
 
-  <div class="callout callout-success">
-    <div class="callout-title">Observation Table Ready</div>
-    <div class="callout-content">
-      Dataset metadata and statistical distribution summaries will be fully compiled here upon executing the simulation workbench.
-    </div>
-  </div>
-</div>
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🔢</span>Observation Table 1 — Numeric Columns</div></div>
+    {% if stats.numeric_columns %}
+    <div class="lab-table-container"><table class="lab-table">
+      <thead><tr><th>Column</th><th>Type</th><th>Count</th><th>Missing</th><th>Mean</th><th>Median</th><th>Min</th><th>Max</th><th>Std. Dev.</th></tr></thead>
+      <tbody>
+      {% for c in stats.columns %}{% if c.kind == 'numeric' %}
+        <tr><td><strong>{{ c.name }}</strong></td><td><span class="type-tag type-tag-{{ c.type }}">{{ c.type }}</span></td>
+          <td class="num">{{ c.count }}</td><td class="num">{{ c.missing }}</td><td class="num">{{ c.mean }}</td><td class="num">{{ c.median }}</td>
+          <td class="num">{{ c.min }}</td><td class="num">{{ c.max }}</td><td class="num">{{ c.std_dev }}</td></tr>
+      {% endif %}{% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}<p>No numeric columns in this dataset.</p>{% endif %}
+  </section>
 
-<!-- Navigation Footer -->
-<div class="lab-nav-footer">
-  <a href="{% url 'virtual_lab:simulation' %}" class="btn btn-secondary">
-    ◀ Back to Step 4: Simulation
-  </a>
-  <a href="{% url 'virtual_lab:quiz' %}" class="btn btn-primary btn-lg">
-    Proceed to Step 6: Post-Lab Quiz ➔
-  </a>
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🔤</span>Observation Table 2 — Text &amp; Date Columns</div></div>
+    {% if stats.categorical_columns or stats.date_columns %}
+    <div class="lab-table-container"><table class="lab-table">
+      <thead><tr><th>Column</th><th>Type</th><th>Count</th><th>Missing</th><th>Unique</th><th>Most frequent / range</th></tr></thead>
+      <tbody>
+      {% for c in stats.columns %}{% if c.kind != 'numeric' %}
+        <tr><td><strong>{{ c.name }}</strong></td><td><span class="type-tag type-tag-{{ c.type }}">{{ c.type }}</span></td>
+          <td class="num">{{ c.count }}</td><td class="num">{{ c.missing }}</td><td class="num">{{ c.unique }}</td>
+          <td>{% if c.kind == 'date' %}{{ c.min }} → {{ c.max }} ({{ c.span_days }} days){% else %}{% for t in c.top_values|slice:":3" %}{{ t.value }} ({{ t.count }}){% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}</td></tr>
+      {% endif %}{% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}<p>No text or date columns in this dataset.</p>{% endif %}
+  </section>
+
+  <section class="lab-card">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🧾</span>Sample of Parsed Rows</div></div>
+    <div class="lab-table-container"><table class="lab-table">
+      <thead><tr>{% for h in dataset.headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for row in preview_rows %}<tr>{% for value in row.values %}<td>{{ value|default:"—" }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+
+  <section class="lab-card prose">
+    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">✍️</span>Student's Inference</div></div>
+    <p class="no-print">Write your conclusions below before printing (this box is not saved).</p>
+    <textarea class="field-control" rows="5" placeholder="e.g. Computer Science students have the highest mean marks; attendance and marks are positively correlated…"></textarea>
+    <div class="print-only" style="margin-top:1rem">Signature: ______________________ &nbsp;&nbsp; Date: ______________</div>
+  </section>
 </div>
+{% endif %}
 {% endblock %}

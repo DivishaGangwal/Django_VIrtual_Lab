@@ -1,0 +1,79 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Virtual Lab{% endblock %} · CSV Visualizer Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'virtual_lab/css/design_system.css' %}">
+  <link rel="stylesheet" href="{% static 'virtual_lab/css/lab_layout.css' %}">
+  <link rel="stylesheet" href="{% static 'virtual_lab/css/simulation.css' %}">
+  <link rel="stylesheet" href="{% static 'virtual_lab/css/pages.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body data-current-step="{{ current_step|default:1 }}">
+
+  <header class="lab-header">
+    <div class="lab-header-container">
+      <a class="lab-brand" href="{% url 'virtual_lab:aim' %}">
+        <div class="lab-brand-icon">CSV</div>
+        <div class="lab-brand-text">
+          <span class="lab-brand-title">Reading &amp; Visualizing CSV Data in Django</span>
+          <span class="lab-brand-subtitle">Computer Engineering Virtual Lab</span>
+        </div>
+      </a>
+      <div class="lab-header-badges">
+        <span class="badge badge-primary">Python csv module</span>
+        <span class="badge badge-slate">Django</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="lab-progress-section" aria-label="Lab steps">
+    <div class="lab-progress-container">
+      <ol class="lab-progress-ribbon">
+        {% for step in lab_steps %}
+          <li>
+            <a href="{% url step.url_name %}"
+               class="lab-step-item{% if step.num < current_step %} completed{% elif step.num == current_step %} active{% endif %}"
+               {% if step.num == current_step %}aria-current="step"{% endif %}>
+              <span class="lab-step-node">{% if step.num < current_step %}✓{% else %}{{ step.num }}{% endif %}</span>
+              <span class="lab-step-label">{{ step.name }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </nav>
+
+  <main class="lab-main">
+    {% block content %}{% endblock %}
+
+    <div class="lab-nav-footer no-print">
+      {% for step in lab_steps %}
+        {% if step.num == current_step|add:"-1" %}
+          <a class="btn btn-secondary" href="{% url step.url_name %}">← {{ step.name }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if current_step == 1 %}<span></span>{% endif %}
+      {% for step in lab_steps %}
+        {% if step.num == current_step|add:"1" %}
+          <a class="btn btn-primary" href="{% url step.url_name %}">Next: {{ step.name }} →</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </main>
+
+  <footer class="lab-footer no-print">
+    <div class="lab-footer-container">
+      <span>Virtual Lab · Reading and Visualizing CSV Data in Django</span>
+      <span>Built with Django, Python's csv &amp; statistics modules, and Chart.js</span>
+    </div>
+  </footer>
+
+  <script src="{% static 'virtual_lab/js/lab_navigator.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

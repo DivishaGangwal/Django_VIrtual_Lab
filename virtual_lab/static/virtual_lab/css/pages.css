@@ -1,0 +1,110 @@
+/* ==========================================================================
+   PAGE-LEVEL STYLES
+   Prose, grids, procedure timeline, explorer, chart studio, quiz, print.
+   Builds on the tokens in design_system.css.
+   ========================================================================== */
+
+.lab-brand { color: inherit; }
+.lab-brand:hover { color: inherit; }
+.lab-progress-ribbon > li { list-style: none; position: relative; z-index: 2; }
+
+.stack > * + * { margin-top: 1.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+@media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+.prose h3 { margin: 1.5rem 0 0.6rem; }
+.prose ul, .prose ol { margin: 0 0 1rem 1.25rem; color: var(--slate-600); }
+.prose li { margin-bottom: 0.35rem; }
+.prose code { background: var(--slate-100); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; color: var(--primary-800); }
+
+.objective-card { display: flex; gap: 1rem; align-items: flex-start; }
+.objective-num {
+  flex: none; width: 34px; height: 34px; border-radius: var(--radius-full);
+  background: var(--primary-600); color: #fff; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.objective-card h4 { margin-bottom: 0.25rem; }
+.objective-card p { margin: 0; font-size: 0.93rem; }
+
+/* Procedure timeline */
+.timeline { list-style: none; position: relative; padding-left: 2.75rem; }
+.timeline::before {
+  content: ''; position: absolute; left: 1rem; top: 0.5rem; bottom: 0.5rem;
+  width: 3px; background: var(--primary-100);
+}
+.timeline-item { position: relative; margin-bottom: 1.5rem; }
+.timeline-item::before {
+  content: attr(data-step); position: absolute; left: -2.75rem; top: 1.2rem;
+  width: 2.1rem; height: 2.1rem; border-radius: var(--radius-full);
+  background: var(--primary-600); color: #fff; font-weight: 800; font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 4px var(--slate-50);
+}
+
+/* Form controls */
+.field-label { display: block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-500); margin-bottom: 0.3rem; }
+.field-control {
+  width: 100%; padding: 0.6rem 0.75rem; border-radius: var(--radius-md);
+  border: 1px solid var(--slate-300); font: inherit; font-size: 0.93rem;
+  background: var(--pure-white); color: var(--slate-800);
+}
+.field-control:focus { outline: none; border-color: var(--primary-600); box-shadow: 0 0 0 3px var(--primary-100); }
+select.field-control[multiple] { min-height: 7.5rem; }
+.controls-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; align-items: start; }
+.controls-row .btn { margin-top: 1.45rem; }
+.field-hint { font-size: 0.78rem; color: var(--slate-500); margin-top: 0.25rem; }
+
+/* Dataset explorer */
+.dataset-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.lab-table td.cell-missing { background: var(--warning-100); color: var(--warning-600); font-style: italic; }
+.lab-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.lab-table th .type-tag { margin-left: 0.35rem; }
+.column-picker { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.column-pill {
+  border: 1px solid var(--slate-300); background: var(--pure-white); border-radius: var(--radius-full);
+  padding: 0.35rem 0.8rem; font: inherit; font-size: 0.85rem; cursor: pointer; color: var(--slate-700);
+}
+.column-pill[aria-pressed="true"] { background: var(--primary-600); color: #fff; border-color: var(--primary-600); }
+.top-values { list-style: none; margin-top: 0.75rem; }
+.top-values li { display: grid; grid-template-columns: 9rem 1fr 2.5rem; gap: 0.6rem; align-items: center; font-size: 0.88rem; margin-bottom: 0.35rem; }
+.top-values .bar { height: 8px; border-radius: 4px; background: var(--primary-500); }
+.top-values .bar-track { background: var(--slate-100); border-radius: 4px; }
+.is-hidden { display: none !important; }
+.empty-state { text-align: center; padding: 2.5rem 1rem; color: var(--slate-500); }
+.empty-state .big { font-size: 2.25rem; }
+
+/* Chart studio */
+.chart-canvas-wrap { position: relative; height: 420px; margin-top: 1.25rem; }
+@media (max-width: 600px) { .chart-canvas-wrap { height: 300px; } }
+.chart-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
+.chart-type-group { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+/* Pipeline helper (lab_layout has no gap on narrow screens) */
+@media (max-width: 900px) { .pipeline-arrow { display: none; } }
+
+/* Quiz */
+.quiz-question { margin-bottom: 1.25rem; }
+.quiz-question h4 { margin-bottom: 0.75rem; display: flex; gap: 0.5rem; }
+.quiz-options { display: grid; gap: 0.5rem; }
+.quiz-option {
+  display: flex; gap: 0.65rem; align-items: center; padding: 0.7rem 0.9rem;
+  border: 1px solid var(--slate-200); border-radius: var(--radius-md); cursor: pointer;
+  background: var(--pure-white); transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.quiz-option:hover { border-color: var(--primary-500); }
+.quiz-option input { accent-color: var(--primary-600); }
+.quiz-option.correct { border-color: var(--success-600); background: var(--success-100); }
+.quiz-option.wrong { border-color: var(--danger-600); background: var(--danger-100); }
+.quiz-explanation { margin-top: 0.6rem; font-size: 0.9rem; }
+.score-ring { font-family: var(--font-heading); font-size: 3rem; font-weight: 800; color: var(--primary-700); line-height: 1; }
+
+/* Print: Observations report */
+@media print {
+  .lab-header, .lab-progress-section, .no-print, .lab-footer { display: none !important; }
+  body { background: #fff; }
+  .lab-main { margin: 0; max-width: none; padding: 0; }
+  .lab-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }

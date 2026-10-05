@@ -1,42 +1,58 @@
-{% extends 'virtual_lab/base_lab.html' %}
+{% extends 'virtual_lab/base.html' %}
 {% load static %}
-
-{% block title %}Post-Lab Quiz & Assessment{% endblock %}
-
+{% block title %}Quiz{% endblock %}
 {% block content %}
 <div class="lab-page-header">
-  <div class="lab-page-badge-row">
-    <span class="badge badge-primary">Step 06 of 06</span>
-    <span class="badge badge-success">Final Evaluation</span>
-  </div>
-  <h1 class="lab-page-title">
-    <span>🎯</span> Post-Lab Assessment & Knowledge Check
-  </h1>
-  <p class="lab-page-description">
-    Test your understanding of Django file handling, in-memory stream decoding, and pure-Python CSV analysis.
-  </p>
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 6 of 6</span><span class="badge badge-slate">10 questions</span></div>
+  <h1 class="lab-page-title">Assessment</h1>
+  <p class="lab-page-description">Answer all questions and submit. Grading happens on the server and your attempt is saved.</p>
 </div>
 
-<div class="lab-card" style="margin-bottom: 2rem;">
-  <div class="lab-card-header">
-    <div class="lab-card-title">
-      <div class="lab-card-icon">💡</div>
-      <span>Multiple Choice Questions (10 Questions)</span>
+<form id="quizForm" data-submit-url="{% url 'virtual_lab:api_submit_quiz' %}" class="stack" novalidate>
+  {% csrf_token %}
+  <section class="lab-card">
+    <label class="field-label" for="studentName">Your name (optional)</label>
+    <input id="studentName" name="student_name" class="field-control" maxlength="100" placeholder="e.g. Aarav Sharma" style="max-width:420px">
+  </section>
+
+  {% for q in questions %}
+  <fieldset class="lab-card quiz-question" data-qid="{{ q.id }}" style="border:var(--border-light)">
+    <h4><span class="badge badge-primary">Q{{ forloop.counter }}</span> {{ q.question }}</h4>
+    <div class="quiz-options">
+      {% for opt in q.options %}
+      <label class="quiz-option" data-index="{{ forloop.counter0 }}">
+        <input type="radio" name="{{ q.id }}" value="{{ forloop.counter0 }}"> <span>{{ opt }}</span>
+      </label>
+      {% endfor %}
     </div>
-    <span class="badge badge-primary">Evaluation Mode</span>
-  </div>
-  <p style="color: var(--slate-600);">
-    Assessment engine interface ready for Developer 3's interactive 10-MCQ grading module.
-  </p>
-</div>
+    <div class="quiz-explanation is-hidden"></div>
+  </fieldset>
+  {% endfor %}
 
-<!-- Navigation Footer -->
-<div class="lab-nav-footer">
-  <a href="{% url 'virtual_lab:observations' %}" class="btn btn-secondary">
-    ◀ Back to Step 5: Observations
-  </a>
-  <a href="{% url 'virtual_lab:aim' %}" class="btn btn-secondary">
-    Restart Experiment (Step 1: Aim) ↺
-  </a>
-</div>
+  <div id="quizNotice" aria-live="polite"></div>
+  <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+    <button type="submit" class="btn btn-primary btn-lg" id="quizSubmitBtn">Submit answers</button>
+    <button type="button" class="btn btn-secondary btn-lg is-hidden" id="quizRetryBtn">Try again</button>
+  </div>
+</form>
+
+<section class="lab-card is-hidden" id="quizResult" style="margin-top:1.5rem;text-align:center">
+  <div class="score-ring" id="quizScore"></div>
+  <p id="quizScoreText" style="margin-top:0.5rem"></p>
+</section>
+
+{% if recent_attempts %}
+<section class="lab-card" style="margin-top:1.5rem">
+  <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🕘</span>Your recent attempts</div></div>
+  <div class="lab-table-container"><table class="lab-table">
+    <thead><tr><th>When</th><th>Name</th><th>Score</th></tr></thead>
+    <tbody>{% for a in recent_attempts %}<tr><td>{{ a.created_at|date:"d M Y, H:i" }}</td><td>{{ a.student_name|default:"—" }}</td><td>{{ a.score }}/{{ a.total }} ({{ a.percentage }}%)</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'virtual_lab/js/lab_utils.js' %}"></script>
+<script src="{% static 'virtual_lab/js/quiz.js' %}"></script>
 {% endblock %}
