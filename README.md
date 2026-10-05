@@ -14,7 +14,7 @@ python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py test              # 29 tests, should all pass
+python manage.py test              # 40 tests, should all pass
 python manage.py runserver
 ```
 
@@ -43,7 +43,7 @@ virtual_lab/
     css/                   design_system, lab_layout, simulation, pages
     js/                    lab_utils, csv_uploader, pipeline_visualizer,
                            dataset_explorer, chart_studio, quiz, lab_navigator
-  tests.py                 parser, stats, charts, pages, APIs, quiz
+  tests/                   test_lab.py (parser, stats, charts, pages, APIs, quiz) + test_csv_parser.py
 ```
 
 ## API

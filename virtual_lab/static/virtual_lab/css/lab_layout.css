@@ -1,249 +1,261 @@
 /* ==========================================================================
-   VIRTUAL LAB LAYOUT STYLES
-   Institutional Header, 6-Step Linear Progress Ribbon, & Sticky Lab Controls
+   PAGE LAYOUT — header, breadcrumbs, sidebar, content column, footer.
+   The look follows the open-source Virtual Labs experiment template
+   (https://github.com/virtual-labs/ph3-lab-mgmt, AGPL-3.0). These rules were
+   written for this project; no code was copied from that repository.
    ========================================================================== */
 
-/* Top Navigation Bar */
-.lab-header {
-  background: var(--primary-900);
-  color: var(--pure-white);
-  border-bottom: 3px solid var(--primary-600);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow-md);
+:root {
+  --vl-blue: #2c99ce;        /* headings, title */
+  --vl-link: #337ab7;        /* breadcrumbs */
+  --vl-menu: #3e6389;        /* sidebar links */
+  --vl-orange: #ff6600;      /* header rule, current page */
+  --vl-rule: #e8e8e8;        /* sidebar divider */
+  --vl-footer: #111111;
+  --vl-footer-bottom: #212121;
+  --vl-accent: #3ec1d5;      /* footer heading underline */
 }
 
-.lab-header-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0.85rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.vl-page {
+  min-height: 100vh;
+  background: #fff;
+  overflow-x: hidden;
 }
 
-.lab-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
+/* ---------- Header ---------- */
+.vl-header {
+  background: #fff;
+  border-bottom: 8px solid var(--vl-orange);
+  font-family: var(--font-heading);
+  z-index: 1030;
 }
 
-.lab-brand-icon {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary-600), var(--accent-cyan));
-  color: var(--pure-white);
-  border-radius: var(--radius-md);
+.vl-navbar {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  min-height: 5.5rem;
+}
+
+.vl-menu-toggle {
+  flex: none;
+  width: 5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.25rem;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.vl-menu-toggle:hover,
+.vl-menu-toggle:focus-visible { color: rgba(0, 0, 0, 0.8); }
+
+.vl-brand {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  font-size: 1.35rem;
-  font-weight: 900;
-  box-shadow: 0 4px 10px rgba(6, 182, 212, 0.3);
-}
-
-.lab-brand-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.lab-brand-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--pure-white);
-  line-height: 1.2;
-}
-
-.lab-brand-subtitle {
-  font-size: 0.75rem;
-  color: var(--slate-400);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.lab-header-badges {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* 6-Step Linear Progress Ribbon */
-.lab-progress-section {
-  background: var(--pure-white);
-  border-bottom: var(--border-light);
-  box-shadow: var(--shadow-xs);
-}
-
-.lab-progress-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0.85rem 1.5rem;
-}
-
-.lab-progress-ribbon {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  list-style: none;
-}
-
-.lab-progress-ribbon::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 30px;
-  right: 30px;
-  height: 3px;
-  background: var(--slate-200);
-  z-index: 1;
-  transform: translateY(-50%);
-}
-
-.lab-step-item {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin: 0 1rem;
+  padding: 0.5rem 1rem;
   text-decoration: none;
-  group: step;
 }
 
-.lab-step-node {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--pure-white);
-  border: 2px solid var(--slate-300);
-  color: var(--slate-600);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.95rem;
-  transition: all var(--transition-normal);
-  box-shadow: var(--shadow-xs);
+.vl-brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--vl-blue);
 }
 
-.lab-step-label {
-  margin-top: 0.4rem;
+.vl-brand-tagline {
+  font-family: var(--font-sans);
   font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--slate-500);
-  transition: color var(--transition-normal);
+  color: #555;
+  margin-top: 0.2rem;
 }
 
-/* Active Step */
-.lab-step-item.active .lab-step-node {
-  background: var(--primary-600);
-  border-color: var(--primary-600);
-  color: var(--pure-white);
-  box-shadow: 0 0 0 5px var(--primary-100), var(--shadow-md);
-  transform: scale(1.1);
+.vl-brand:hover .vl-brand-title { color: var(--primary-800); }
+
+/* ---------- Breadcrumbs ---------- */
+.vl-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.6rem;
+  padding: 1.5rem 0.6rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 1.6rem;
+  color: var(--vl-link);
 }
 
-.lab-step-item.active .lab-step-label {
-  color: var(--primary-700);
+.vl-breadcrumbs .fa { font-size: 1.6rem; }
+
+/* ---------- Sidebar + content ---------- */
+.vl-main {
+  display: flex;
+  align-items: stretch;
+  font-family: var(--font-sans);
 }
 
-/* Completed Step */
-.lab-step-item.completed .lab-step-node {
-  background: var(--success-600);
-  border-color: var(--success-600);
-  color: var(--pure-white);
-}
-
-.lab-step-item.completed .lab-step-label {
-  color: var(--success-600);
-}
-
-/* Step Hover */
-.lab-step-item:hover .lab-step-node {
-  border-color: var(--primary-500);
-  transform: translateY(-2px);
-}
-
-/* Main Content Area */
-.lab-main {
-  flex: 1;
-  max-width: 1280px;
-  width: 100%;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
-}
-
-.lab-page-header {
-  margin-bottom: 2rem;
+.vl-sidebar {
+  flex: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: flex-start;
+  padding: 0.75rem 1.5rem;
+  border-right: thin solid var(--vl-rule);
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  min-width: 11rem;
 }
 
-.lab-page-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+.vl-sidebar.vlabs-hidden { display: none; }
+
+/* Classes kept from the old progress ribbon (tests check them). */
+.vl-sidebar .lab-step-item {
+  display: block;
+  padding: 0.5rem;
+  color: var(--vl-menu);
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 1.5;
 }
+
+.vl-sidebar .lab-step-item:hover { color: var(--vl-blue); }
+.vl-sidebar .lab-step-item.active { color: var(--vl-orange); }
+
+.vl-content {
+  flex: 1 1 auto;
+  min-width: 0;                 /* lets wide tables scroll instead of stretching the page */
+  padding: 0 3rem 2rem;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: #000;
+}
+
+.vl-experiment-title {
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: var(--vl-blue);
+  margin: 0.75rem 0 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #eaecef;
+  letter-spacing: 0;
+}
+
+/* Page heading used by Simulation / Observations / Quiz */
+.lab-page-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lab-page-badge-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
 .lab-page-title {
-  font-size: 2rem;
-  color: var(--slate-900);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--vl-blue);
+  letter-spacing: 0;
 }
 
 .lab-page-description {
   font-size: 1.05rem;
-  color: var(--slate-600);
-  max-width: 850px;
+  color: #333;
+  margin: 0;
 }
 
-/* Laboratory Sticky Controls / Next-Prev Footer */
+/* Previous / Next */
 .lab-nav-footer {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: var(--border-light);
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #eaecef;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-/* Global Footer */
-.lab-footer {
-  background: var(--slate-900);
-  color: var(--slate-400);
-  border-top: 1px solid var(--slate-800);
-  padding: 2rem 1.5rem;
-  font-size: 0.875rem;
-  margin-top: auto;
-}
-
-.lab-footer-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  gap: 1rem;
 }
 
-@media (max-width: 768px) {
-  .lab-progress-ribbon {
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-  }
-  .lab-step-label {
-    display: none;
-  }
-  .lab-header-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
+/* ---------- Mobile pop-up menu ---------- */
+.vl-popup-menu .modal-title { font-size: 1.5rem; margin: 0; }
+
+.vl-popup-menu .modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.vl-popup-link {
+  padding: 0.5rem;
+  color: var(--vl-menu);
+  text-decoration: none;
+}
+
+.vl-popup-link.current-item { color: var(--vl-orange); }
+
+/* ---------- Footer ---------- */
+.vl-footer {
+  margin-top: auto;
+  background: var(--vl-footer);
+  color: #f8f9fa;
+  font-family: var(--font-heading);
+  font-size: 14px;
+}
+
+.vl-footer-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 3rem 1.5rem;
+}
+
+.vl-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.vl-footer-sect-name {
+  align-self: flex-start;
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 0.15rem solid;
+  border-image: linear-gradient(to right, var(--vl-accent) 20%, #555 0%) 1;
+}
+
+.vl-footer-bottom {
+  background: var(--vl-footer-bottom);
+  text-align: center;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-sans);
+  color: #ccc;
+}
+
+.vl-footer-bottom a { color: #6ea8fe; font-weight: 700; }
+.vl-footer-bottom a:hover { color: #9ec5fe; }
+
+/* Body is a flex column (design_system.css), so the footer sits at the bottom. */
+.vl-main { flex: 1 0 auto; }
+
+/* ---------- Narrow screens ---------- */
+@media (max-width: 991.98px) {
+  .vl-sidebar { display: none; }
+  .vl-navbar { min-height: 4rem; }
+  .vl-menu-toggle { width: 4rem; font-size: 1.3rem; }
+  .vl-brand { margin: 0 0.5rem; padding: 0.4rem 0.5rem; }
+  .vl-brand-title { font-size: 1.5rem; }
+  .vl-breadcrumbs, .vl-breadcrumbs .fa { font-size: 1.15rem; }
+  .vl-breadcrumbs { padding: 1rem 1rem 0.75rem; }
+  .vl-content { padding: 0 1rem 1.5rem; font-size: 1.05rem; }
+  .vl-experiment-title { font-size: 1.45rem; }
+  .vl-footer-cols { grid-template-columns: 1fr; padding: 1rem 1.25rem; }
 }

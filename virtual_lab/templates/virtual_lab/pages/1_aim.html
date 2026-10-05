@@ -1,45 +1,34 @@
 {% extends 'virtual_lab/base.html' %}
 {% block title %}Aim{% endblock %}
+{% block content_class %} markdown-body{% endblock %}
 {% block content %}
-<div class="lab-page-header">
-  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 1 of 6</span><span class="badge badge-slate">≈ 5 min</span></div>
-  <h1 class="lab-page-title">Aim of the Experiment</h1>
-  <p class="lab-page-description">
-    To build a Django web application that accepts a CSV file, parses it with Python's built-in
-    <code>csv</code> module, computes descriptive statistics, and visualizes the data as interactive charts.
-  </p>
-</div>
+<h2 class="page-name">Aim of the Experiment</h2>
+<p>
+  To build a Django web application that accepts a CSV file, parses it with Python's built-in
+  <code>csv</code> module, computes descriptive statistics, and visualizes the data as interactive charts.
+</p>
 
-<div class="stack">
-  <section class="lab-card">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🎯</span>Learning Objectives</div></div>
-    <div class="grid-2">
-      <div class="objective-card"><span class="objective-num">1</span><div><h4>Handle file uploads</h4><p>Receive a file through a Django form, read it from <code>request.FILES</code> and validate type and size on the server.</p></div></div>
-      <div class="objective-card"><span class="objective-num">2</span><div><h4>Parse CSV without pandas</h4><p>Decode bytes, detect the delimiter with <code>csv.Sniffer</code> and read rows with the <code>csv</code> module.</p></div></div>
-      <div class="objective-card"><span class="objective-num">3</span><div><h4>Infer types &amp; compute statistics</h4><p>Classify columns as int, float, date or text and compute mean, median, standard deviation and more with <code>statistics</code>.</p></div></div>
-      <div class="objective-card"><span class="objective-num">4</span><div><h4>Visualize data</h4><p>Send aggregated JSON from a Django view to Chart.js and draw bar, line, pie, scatter and histogram charts.</p></div></div>
-    </div>
-  </section>
+<h3>Learning Objectives</h3>
+<ol>
+  <li><strong>Handle file uploads</strong> — Receive a file through a Django form, read it from <code>request.FILES</code> and validate type and size on the server.</li>
+  <li><strong>Parse CSV without pandas</strong> — Decode bytes, detect the delimiter with <code>csv.Sniffer</code> and read rows with the <code>csv</code> module.</li>
+  <li><strong>Infer types &amp; compute statistics</strong> — Classify columns as int, float, date or text and compute mean, median, standard deviation and more with <code>statistics</code>.</li>
+  <li><strong>Visualize data</strong> — Send aggregated JSON from a Django view to Chart.js and draw bar, line, pie, scatter and histogram charts.</li>
+</ol>
 
-  <div class="grid-2">
-    <section class="lab-card">
-      <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🧰</span>Prerequisites</div></div>
-      <ul class="prose" style="margin-left:1.25rem;color:var(--slate-600)">
-        <li>Python basics: lists, dictionaries, loops, functions</li>
-        <li>Django basics: views, URLs, templates</li>
-        <li>What a CSV (Comma-Separated Values) file looks like</li>
-      </ul>
-    </section>
-    <section class="lab-card">
-      <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🏁</span>Expected Outcome</div></div>
-      <p>By the end of this lab you will have loaded a dataset, read its statistics, produced at least two charts,
-        generated a printable observation sheet, and completed a 10-question assessment.</p>
-    </section>
-  </div>
+<h3>Prerequisites</h3>
+<ul>
+  <li>Python basics: lists, dictionaries, loops, functions</li>
+  <li>Django basics: views, URLs, templates</li>
+  <li>What a CSV (Comma-Separated Values) file looks like</li>
+</ul>
 
-  <div class="callout">
-    <div class="callout-title">💡 How to use this lab</div>
-    <div class="callout-content">Work through the six steps in order using the progress bar above. The Simulation (Step 4) is the hands-on part; your dataset stays loaded while you move between pages.</div>
-  </div>
+<h3>Expected Outcome</h3>
+<p>By the end of this lab you will have loaded a dataset, read its statistics, produced at least two charts,
+  generated a printable observation sheet, and completed a 10-question assessment.</p>
+
+<div class="callout">
+  <div class="callout-title">💡 How to use this lab</div>
+  <div class="callout-content">Work through the six steps in order using the menu on the left. The Simulation (Step 4) is the hands-on part; your dataset stays loaded while you move between pages.</div>
 </div>
 {% endblock %}

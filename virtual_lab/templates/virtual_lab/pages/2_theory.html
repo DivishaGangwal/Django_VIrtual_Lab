@@ -1,85 +1,69 @@
 {% extends 'virtual_lab/base.html' %}
 {% block title %}Theory{% endblock %}
+{% block content_class %} markdown-body{% endblock %}
 {% block content %}
-<div class="lab-page-header">
-  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 2 of 6</span><span class="badge badge-slate">≈ 15 min</span></div>
-  <h1 class="lab-page-title">Theory</h1>
-  <p class="lab-page-description">The concepts behind every stage of the CSV-to-chart pipeline.</p>
-</div>
+<h2 class="page-name">Theory</h2>
+<p>The concepts behind every stage of the CSV-to-chart pipeline.</p>
 
-<div class="stack">
-  <section class="lab-card prose">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">📄</span>1. What is a CSV file?</div></div>
-    <p>A CSV file is plain text in which each line is a record and fields are separated by a <strong>delimiter</strong> — usually a comma, but semicolons (common in European locales), tabs and pipes are also used. The first line is normally a <strong>header row</strong> naming the columns.</p>
-    <div class="code-inspector-card"><div class="code-inspector-header"><span class="code-inspector-title">student_marks.csv</span></div>
-      <div class="code-inspector-body"><pre>Student_ID,Student_Name,Department,Marks
+<h3>1. What is a CSV file?</h3>
+<p>A CSV file is plain text in which each line is a record and fields are separated by a <strong>delimiter</strong> — usually a comma, but semicolons (common in European locales), tabs and pipes are also used. The first line is normally a <strong>header row</strong> naming the columns.</p>
+<div class="code-caption">student_marks.csv</div>
+<pre><code>Student_ID,Student_Name,Department,Marks
 101,Aarav Sharma,Computer Science,88.5
-102,"Rao, Aditi",Information Tech,72.0</pre></div></div>
-    <p>Fields that contain the delimiter are wrapped in double quotes (<code>"Rao, Aditi"</code>). This is why splitting a line with <code>line.split(',')</code> is wrong — the <code>csv</code> module handles quoting correctly.</p>
-  </section>
+102,"Rao, Aditi",Information Tech,72.0</code></pre>
+<p>Fields that contain the delimiter are wrapped in double quotes (<code>"Rao, Aditi"</code>). This is why splitting a line with <code>line.split(',')</code> is wrong — the <code>csv</code> module handles quoting correctly.</p>
 
-  <section class="lab-card prose">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">📤</span>2. File uploads in Django</div></div>
-    <ol>
-      <li>The HTML form must use <code>method="post"</code> and <code>enctype="multipart/form-data"</code> (or JavaScript <code>FormData</code>).</li>
-      <li>Django puts the file in <code>request.FILES</code> as an <code>UploadedFile</code>. Small files stay in memory; large ones are streamed to a temporary file.</li>
-      <li>A <code>forms.Form</code> with a <code>FileField</code> validates it. Custom <code>clean_&lt;field&gt;()</code> methods add rules (extension, size, not-binary).</li>
-      <li><code>CsrfViewMiddleware</code> rejects POST requests that do not carry a valid CSRF token.</li>
-    </ol>
-  </section>
+<h3>2. File uploads in Django</h3>
+<ol>
+  <li>The HTML form must use <code>method="post"</code> and <code>enctype="multipart/form-data"</code> (or JavaScript <code>FormData</code>).</li>
+  <li>Django puts the file in <code>request.FILES</code> as an <code>UploadedFile</code>. Small files stay in memory; large ones are streamed to a temporary file.</li>
+  <li>A <code>forms.Form</code> with a <code>FileField</code> validates it. Custom <code>clean_&lt;field&gt;()</code> methods add rules (extension, size, not-binary).</li>
+  <li><code>CsrfViewMiddleware</code> rejects POST requests that do not carry a valid CSRF token.</li>
+</ol>
 
-  <section class="lab-card prose">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🐍</span>3. Decoding and parsing</div></div>
-    <p>Uploaded files are <strong>bytes</strong>. They must be decoded to text before parsing. Excel often adds a Byte Order Mark (BOM), so this lab tries <code>utf-8-sig</code> first, then <code>cp1252</code>, then <code>latin-1</code>.</p>
-    <div class="code-inspector-card"><div class="code-inspector-header"><span class="code-inspector-title">services/csv_parser.py (simplified)</span></div>
-      <div class="code-inspector-body"><pre><span class="code-kw">import</span> csv, io
+<h3>3. Decoding and parsing</h3>
+<p>Uploaded files are <strong>bytes</strong>. They must be decoded to text before parsing. Excel often adds a Byte Order Mark (BOM), so this lab tries <code>utf-8-sig</code> first, then <code>cp1252</code>, then <code>latin-1</code>.</p>
+<div class="code-caption">services/csv_parser.py (simplified)</div>
+<pre><code><span class="code-kw">import</span> csv, io
 
 text = uploaded_file.read().<span class="code-fn">decode</span>(<span class="code-str">'utf-8-sig'</span>)
 delimiter = csv.<span class="code-cls">Sniffer</span>().<span class="code-fn">sniff</span>(text[:<span class="code-str">4096</span>]).delimiter
 reader = csv.<span class="code-fn">reader</span>(io.<span class="code-cls">StringIO</span>(text), delimiter=delimiter)
 headers = [h.<span class="code-fn">strip</span>() <span class="code-kw">for</span> h <span class="code-kw">in</span> <span class="code-fn">next</span>(reader)]
-rows = [<span class="code-fn">dict</span>(<span class="code-fn">zip</span>(headers, cells)) <span class="code-kw">for</span> cells <span class="code-kw">in</span> reader]</pre></div></div>
-    <ul>
-      <li><code>io.StringIO</code> wraps a string so the <code>csv</code> module can read it like a file — no disk writes.</li>
-      <li><code>csv.Sniffer</code> guesses the delimiter from a sample.</li>
-      <li>Header names are stripped of spaces, blank headers are named <code>Column_N</code>, and duplicates become <code>name_2</code> so no column is silently lost.</li>
-      <li>Cells such as <code>""</code>, <code>NA</code>, <code>null</code>, <code>NaN</code> and <code>-</code> are counted as <strong>missing values</strong>.</li>
-    </ul>
-  </section>
+rows = [<span class="code-fn">dict</span>(<span class="code-fn">zip</span>(headers, cells)) <span class="code-kw">for</span> cells <span class="code-kw">in</span> reader]</code></pre>
+<ul>
+  <li><code>io.StringIO</code> wraps a string so the <code>csv</code> module can read it like a file — no disk writes.</li>
+  <li><code>csv.Sniffer</code> guesses the delimiter from a sample.</li>
+  <li>Header names are stripped of spaces, blank headers are named <code>Column_N</code>, and duplicates become <code>name_2</code> so no column is silently lost.</li>
+  <li>Cells such as <code>""</code>, <code>NA</code>, <code>null</code>, <code>NaN</code> and <code>-</code> are counted as <strong>missing values</strong>.</li>
+</ul>
 
-  <section class="lab-card prose">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">📊</span>4. Type inference and descriptive statistics</div></div>
-    <p>Every CSV value is a string. A column is treated as <span class="type-tag type-tag-int">int</span> or <span class="type-tag type-tag-float">float</span> only if <em>every</em> non-missing value converts to a number, as <span class="type-tag type-tag-date">date</span> if every value matches a date format, and otherwise as <span class="type-tag type-tag-str">str</span> (categorical).</p>
-    <div class="lab-table-container"><table class="lab-table">
-      <thead><tr><th>Statistic</th><th>Python</th><th>Meaning</th></tr></thead>
-      <tbody>
-        <tr><td>Mean</td><td><code>statistics.fmean()</code></td><td>Arithmetic average</td></tr>
-        <tr><td>Median</td><td><code>statistics.median()</code></td><td>Middle value; robust to outliers</td></tr>
-        <tr><td>Std. deviation</td><td><code>statistics.stdev()</code></td><td>Typical spread around the mean (sample)</td></tr>
-        <tr><td>Quartiles</td><td><code>statistics.quantiles(n=4)</code></td><td>Q1 and Q3 cut points</td></tr>
-        <tr><td>Mode / top values</td><td><code>collections.Counter</code></td><td>Most frequent categories</td></tr>
-      </tbody>
-    </table></div>
-  </section>
+<h3>4. Type inference and descriptive statistics</h3>
+<p>Every CSV value is a string. A column is treated as <span class="type-tag type-tag-int">int</span> or <span class="type-tag type-tag-float">float</span> only if <em>every</em> non-missing value converts to a number, as <span class="type-tag type-tag-date">date</span> if every value matches a date format, and otherwise as <span class="type-tag type-tag-str">str</span> (categorical).</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>Statistic</th><th>Python</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>Mean</td><td><code>statistics.fmean()</code></td><td>Arithmetic average</td></tr>
+    <tr><td>Median</td><td><code>statistics.median()</code></td><td>Middle value; robust to outliers</td></tr>
+    <tr><td>Std. deviation</td><td><code>statistics.stdev()</code></td><td>Typical spread around the mean (sample)</td></tr>
+    <tr><td>Quartiles</td><td><code>statistics.quantiles(n=4)</code></td><td>Q1 and Q3 cut points</td></tr>
+    <tr><td>Mode / top values</td><td><code>collections.Counter</code></td><td>Most frequent categories</td></tr>
+  </tbody>
+</table></div>
 
-  <section class="lab-card prose">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">📈</span>5. Choosing a chart</div></div>
-    <div class="lab-table-container"><table class="lab-table">
-      <thead><tr><th>Chart</th><th>Use it to show</th><th>Example</th></tr></thead>
-      <tbody>
-        <tr><td>Bar</td><td>Compare a value across categories</td><td>Mean Marks per Department</td></tr>
-        <tr><td>Line</td><td>Change over an ordered sequence</td><td>Rainfall by Month</td></tr>
-        <tr><td>Pie / Doughnut</td><td>Share of a whole (few categories)</td><td>Students per Grade</td></tr>
-        <tr><td>Scatter</td><td>Relationship between two numbers</td><td>Attendance vs Marks</td></tr>
-        <tr><td>Histogram</td><td>Distribution of one number</td><td>Spread of CPU utilisation</td></tr>
-      </tbody>
-    </table></div>
-    <p style="margin-top:1rem">In this lab Django does the grouping and aggregation (sum, mean, count, min, max) and returns <code>{labels, datasets}</code> JSON; Chart.js in the browser only draws it.</p>
-  </section>
+<h3>5. Choosing a chart</h3>
+<div class="table-wrap"><table>
+  <thead><tr><th>Chart</th><th>Use it to show</th><th>Example</th></tr></thead>
+  <tbody>
+    <tr><td>Bar</td><td>Compare a value across categories</td><td>Mean Marks per Department</td></tr>
+    <tr><td>Line</td><td>Change over an ordered sequence</td><td>Rainfall by Month</td></tr>
+    <tr><td>Pie / Doughnut</td><td>Share of a whole (few categories)</td><td>Students per Grade</td></tr>
+    <tr><td>Scatter</td><td>Relationship between two numbers</td><td>Attendance vs Marks</td></tr>
+    <tr><td>Histogram</td><td>Distribution of one number</td><td>Spread of CPU utilisation</td></tr>
+  </tbody>
+</table></div>
+<p>In this lab Django does the grouping and aggregation (sum, mean, count, min, max) and returns <code>{labels, datasets}</code> JSON; Chart.js in the browser only draws it.</p>
 
-  <section class="lab-card prose">
-    <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🗂️</span>6. Keeping state with sessions</div></div>
-    <p>HTTP is stateless. After parsing, the dataset and its statistics are saved in <code>request.session</code> (stored in the database). The Observations page reads the same session data to build the report.</p>
-  </section>
-</div>
+<h3>6. Keeping state with sessions</h3>
+<p>HTTP is stateless. After parsing, the dataset and its statistics are saved in <code>request.session</code> (stored in the database). The Observations page reads the same session data to build the report.</p>
 {% endblock %}

@@ -5,7 +5,7 @@
  */
 (() => {
   const { el, fetchJSON, notice } = LabUtils;
-  const PALETTE = ['#2563eb', '#06b6d4', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#ec4899', '#64748b', '#84cc16', '#0ea5e9'];
+  const PALETTE = ['#2c99ce', '#ff6600', '#77bb41', '#3e6389', '#3ec1d5', '#b26100', '#8e44ad', '#5c5c5c', '#c62828', '#288ec8'];
   let chart = null;
   let dataset = null;
 

@@ -4,10 +4,6 @@
    Builds on the tokens in design_system.css.
    ========================================================================== */
 
-.lab-brand { color: inherit; }
-.lab-brand:hover { color: inherit; }
-.lab-progress-ribbon > li { list-style: none; position: relative; z-index: 2; }
-
 .stack > * + * { margin-top: 1.5rem; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
@@ -99,11 +95,61 @@ select.field-control[multiple] { min-height: 7.5rem; }
 .quiz-explanation { margin-top: 0.6rem; font-size: 0.9rem; }
 .score-ring { font-family: var(--font-heading); font-size: 3rem; font-weight: 800; color: var(--primary-700); line-height: 1; }
 
+/* Virtual Labs markdown-style content (Aim, Theory, Procedure).
+   github-markdown.min.css supplies tables, lists and code blocks; these rules
+   switch it to the Virtual Labs fonts, colours and heading styles. */
+.vl-content.markdown-body {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  color: #000;
+  text-align: justify;
+  line-height: 1.6;
+}
+.vl-content.markdown-body .vl-experiment-title { border-bottom: 1px solid #eaecef; }
+.markdown-body h2 {
+  color: var(--primary-600);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  border-bottom: 0;
+  padding-top: 2rem;
+  padding-bottom: 0.5rem;
+  margin-top: 0;
+}
+.markdown-body h2.page-name { padding-top: 0.5rem; }
+.markdown-body h3 {
+  color: #333;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-decoration: underline;
+  padding-top: 1rem;
+  margin-top: 0;
+}
+.markdown-body p, .markdown-body li { color: inherit; }
+.markdown-body table { text-align: left; font-family: var(--font-sans); font-size: 0.95rem; display: table; width: 100%; }
+.markdown-body table tr { border-top: 0; }
+.markdown-body .table-wrap { overflow-x: auto; margin-bottom: 16px; }
+.markdown-body .table-wrap table { margin-bottom: 0; }
+.markdown-body pre { text-align: left; font-size: 0.85rem; }
+.markdown-body .code-caption { font-family: var(--font-sans); font-size: 0.85rem; color: var(--slate-500); margin-bottom: 0.3rem; }
+/* Syntax colours for the light code background */
+.markdown-body pre .code-kw { color: #d73a49; font-weight: 600; }
+.markdown-body pre .code-fn { color: #6f42c1; }
+.markdown-body pre .code-str { color: #032f62; }
+.markdown-body pre .code-cls { color: #e36209; }
+/* github-markdown-css styles every link inside .markdown-body; give buttons back their colours */
+.markdown-body a.btn { color: var(--bs-btn-color); background-color: var(--bs-btn-bg); text-decoration: none; }
+.markdown-body a.btn:hover { color: var(--bs-btn-hover-color); background-color: var(--bs-btn-hover-bg); }
+.markdown-body .callout { text-align: left; }
+.markdown-body .type-tag { margin-left: 0; }
+
 /* Print: Observations report */
 @media print {
-  .lab-header, .lab-progress-section, .no-print, .lab-footer { display: none !important; }
-  body { background: #fff; }
-  .lab-main { margin: 0; max-width: none; padding: 0; }
+  .vl-header, .vl-breadcrumbs, .vl-sidebar, .vl-footer, .no-print, .modal { display: none !important; }
+  body { background: #fff; display: block; }
+  .vl-main { display: block; }
+  .vl-content { padding: 0; }
   .lab-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
   .print-only { display: block !important; }
 }

@@ -1,41 +1,39 @@
 {% extends 'virtual_lab/base.html' %}
 {% block title %}Procedure{% endblock %}
+{% block content_class %} markdown-body{% endblock %}
 {% block content %}
-<div class="lab-page-header">
-  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 3 of 6</span><span class="badge badge-slate">≈ 5 min</span></div>
-  <h1 class="lab-page-title">Procedure</h1>
-  <p class="lab-page-description">Follow these steps on the Simulation page.</p>
-</div>
+<h2 class="page-name">Procedure</h2>
+<p>Follow these steps on the Simulation page.</p>
 
-<ol class="timeline">
-  <li class="timeline-item" data-step="1"><div class="lab-card">
-    <h3>Load a dataset</h3>
-    <p>Drag a <code>.csv</code> file onto the upload box (max 5 MB) <strong>or</strong> pick a built-in sample and click <em>Load Sample</em>. Try the <em>Lab Sensor Log</em> sample to see missing values and a semicolon delimiter.</p>
-  </div></li>
-  <li class="timeline-item" data-step="2"><div class="lab-card">
-    <h3>Watch the request pipeline</h3>
-    <p>The pipeline tracker lights up each stage: Browser → <code>request.FILES</code> → decode → <code>csv</code> parse → JSON response.</p>
-  </div></li>
-  <li class="timeline-item" data-step="3"><div class="lab-card">
-    <h3>Inspect the data</h3>
-    <p>Check the detected delimiter, row and column counts, missing values (highlighted in yellow) and the inferred type tag on every column header.</p>
-  </div></li>
-  <li class="timeline-item" data-step="4"><div class="lab-card">
-    <h3>Read the statistics</h3>
-    <p>Pick a column in the Statistics panel. Numeric columns show mean, median, min, max, standard deviation and quartiles; text columns show their most frequent values.</p>
-  </div></li>
-  <li class="timeline-item" data-step="5"><div class="lab-card">
-    <h3>Build charts</h3>
-    <p>In the Chart Studio choose a chart type, an X column, one or more Y columns and an aggregation, then click <em>Plot</em>. Make at least two charts (for example a bar chart and a scatter plot) and download them as PNG.</p>
-  </div></li>
-  <li class="timeline-item" data-step="6"><div class="lab-card">
-    <h3>Record observations</h3>
-    <p>Open the Observations page. It is generated from your loaded dataset — print it or save it as PDF, and download the statistics as CSV.</p>
-  </div></li>
-  <li class="timeline-item" data-step="7"><div class="lab-card">
-    <h3>Take the quiz</h3>
-    <p>Answer the 10 questions. Your score is graded on the server and saved.</p>
-  </div></li>
+<ol>
+  <li>
+    <strong>Load a dataset.</strong>
+    Drag a <code>.csv</code> file onto the upload box (max 5 MB) <strong>or</strong> pick a built-in sample and click <em>Load Sample</em>. Try the <em>Lab Sensor Log</em> sample to see missing values and a semicolon delimiter.
+  </li>
+  <li>
+    <strong>Watch the request pipeline.</strong>
+    The pipeline tracker lights up each stage: Browser → <code>request.FILES</code> → decode → <code>csv</code> parse → JSON response.
+  </li>
+  <li>
+    <strong>Inspect the data.</strong>
+    Check the detected delimiter, row and column counts, missing values (highlighted in yellow) and the inferred type tag on every column header.
+  </li>
+  <li>
+    <strong>Read the statistics.</strong>
+    Pick a column in the Statistics panel. Numeric columns show mean, median, min, max, standard deviation and quartiles; text columns show their most frequent values.
+  </li>
+  <li>
+    <strong>Build charts.</strong>
+    In the Chart Studio choose a chart type, an X column, one or more Y columns and an aggregation, then click <em>Plot</em>. Make at least two charts (for example a bar chart and a scatter plot) and download them as PNG.
+  </li>
+  <li>
+    <strong>Record observations.</strong>
+    Open the Observations page. It is generated from your loaded dataset — print it or save it as PDF, and download the statistics as CSV.
+  </li>
+  <li>
+    <strong>Take the quiz.</strong>
+    Answer the 10 questions. Your score is graded on the server and saved.
+  </li>
 </ol>
 
 <div class="callout callout-warning">

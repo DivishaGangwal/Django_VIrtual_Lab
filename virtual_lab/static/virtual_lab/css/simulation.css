@@ -5,25 +5,27 @@
 
 /* 5-Node Django Request-Response Pipeline Visualizer */
 .pipeline-visualizer-card {
-  background: linear-gradient(135deg, var(--slate-900), #1e293b);
-  color: var(--pure-white);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--slate-50);
+  color: var(--slate-800);
+  border: var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .pipeline-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 .pipeline-title {
-  color: var(--pure-white);
-  font-size: 1.1rem;
+  color: var(--primary-600);
+  font-size: 1.15rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -41,8 +43,8 @@
 .pipeline-node {
   flex: 1;
   min-width: 140px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--pure-white);
+  border: 1px solid var(--slate-200);
   border-radius: var(--radius-md);
   padding: 0.75rem;
   display: flex;
@@ -59,40 +61,41 @@
 }
 
 .pipeline-node-name {
-  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--slate-200);
+  color: var(--primary-800);
 }
 
 .pipeline-node-desc {
-  font-size: 0.7rem;
-  color: var(--slate-400);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--slate-500);
 }
 
 /* Node States */
 .pipeline-node.active {
-  background: rgba(37, 99, 235, 0.25);
-  border-color: var(--primary-500);
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-  transform: translateY(-2px);
+  background: var(--primary-50);
+  border-color: var(--primary-600);
+  box-shadow: var(--shadow-glow);
 }
 
 .pipeline-node.active .pipeline-node-name {
-  color: var(--accent-cyan);
+  color: var(--accent-orange);
 }
 
 .pipeline-node.completed {
-  background: rgba(5, 150, 105, 0.15);
-  border-color: var(--success-600);
+  background: var(--success-100);
+  border-color: #77bb41;
 }
 
 .pipeline-node.completed .pipeline-node-name {
-  color: #34d399;
+  color: var(--success-600);
 }
 
 /* Arrow Connector */
 .pipeline-arrow {
-  color: var(--slate-500);
+  color: var(--slate-400);
   font-weight: 900;
   font-size: 1rem;
 }
@@ -288,4 +291,12 @@
   font-family: var(--font-mono);
   color: var(--slate-400);
   margin-top: 0.2rem;
+}
+
+/* Bootstrap's .badge never wraps; the pipeline status can hold a long error message */
+.pipeline-header .badge {
+  white-space: normal;
+  text-align: left;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }

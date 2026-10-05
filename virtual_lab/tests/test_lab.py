@@ -8,11 +8,11 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import QuizAttempt
-from .quiz_bank import QUIZ_QUESTIONS
-from .services import CSVParserService, SampleLoaderService, build_chart_data, describe_dataset
-from .services.chart_builder import ChartBuildError
-from .services.stats_engine import infer_column_type
+from virtual_lab.models import QuizAttempt
+from virtual_lab.quiz_bank import QUIZ_QUESTIONS
+from virtual_lab.services import CSVParserService, SampleLoaderService, build_chart_data, describe_dataset
+from virtual_lab.services.chart_builder import ChartBuildError
+from virtual_lab.services.stats_engine import infer_column_type
 
 
 class CSVParserTests(TestCase):
