@@ -11,7 +11,7 @@ Requires **Python 3.10+** (3.12+ recommended; Django 6 needs 3.12).
 ```bash
 cd Django_Virtual_Lab
 python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+       # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py test              # 40 tests, should all pass

@@ -199,3 +199,51 @@ class ApiTests(TestCase):
     def test_quiz_page_hides_answers(self):
         r = self.client.get(reverse('virtual_lab:quiz'))
         self.assertNotContains(r, QUIZ_QUESTIONS[0]['explanation'])
+
+
+class TraceTests(TestCase):
+    """The educational 'trace' added to API responses must describe, not change, results."""
+
+    def test_upload_trace_with_bom_and_quotes(self):
+        data = b'\xef\xbb\xbfName;Marks\r\n"Rao; Aditi";80\r\nB;\r\n'
+        r = self.client.post(reverse('virtual_lab:api_upload_csv'),
+                             {'csv_file': SimpleUploadedFile('t.csv', data, content_type='text/csv')})
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertEqual(body['headers'], ['Name', 'Marks'])  # unchanged behaviour
+        t = body['trace']
+        self.assertTrue(t['bytes']['has_bom'])
+        self.assertEqual(t['bytes']['encoding_used'], 'utf-8-sig')
+        self.assertEqual(t['upload']['class_name'], 'InMemoryUploadedFile')
+        self.assertEqual(t['sniff']['delimiter'], ';')
+        self.assertEqual(t['tokenize']['rows'][0]['tokens'], ['Rao; Aditi', '80'])
+        self.assertIn('Marks', t['tokenize']['rows'][1]['missing'])
+        self.assertEqual(len(t['types']['columns']), 2)
+
+    def test_sample_trace(self):
+        r = self.client.get(reverse('virtual_lab:api_load_sample'), {'sample_id': 'lab_sensor_log'})
+        t = r.json()['trace']
+        self.assertEqual(t['sniff']['delimiter'], ';')
+        self.assertEqual(t['upload']['source'], 'sample')
+        self.assertIsNotNone(t['types']['example'])
+
+    def test_chart_trace_grouped(self):
+        self.client.post(reverse('virtual_lab:api_upload_csv'),
+                         {'csv_file': SimpleUploadedFile('t.csv', b'Dept,Marks\nCS,80\nCS,90\nIT,70\n')})
+        r = self.client.get(reverse('virtual_lab:api_chart_data'), {'type': 'bar', 'x': 'Dept', 'y': 'Marks', 'agg': 'mean'})
+        body = r.json()
+        self.assertEqual(body['datasets'][0]['data'], [85.0, 70.0])
+        tr = body['trace']
+        self.assertEqual(tr['mode'], 'grouped')
+        self.assertEqual(tr['groups'][0]['values'], [80.0, 90.0])
+        self.assertEqual(tr['groups'][0]['result'], 85.0)
+
+    def test_chart_trace_other_modes(self):
+        self.client.post(reverse('virtual_lab:api_upload_csv'),
+                         {'csv_file': SimpleUploadedFile('t.csv', b'Dept,Marks,Att\nCS,80,9\nCS,90,8\nIT,70,\n')})
+        url = reverse('virtual_lab:api_chart_data')
+        self.assertEqual(self.client.get(url, {'type': 'histogram', 'x': 'Marks', 'bins': 2}).json()['trace']['mode'], 'histogram')
+        self.assertEqual(self.client.get(url, {'type': 'scatter', 'x': 'Att', 'y': 'Marks'}).json()['trace']['mode'], 'scatter')
+        self.assertEqual(self.client.get(url, {'type': 'pie', 'x': 'Dept'}).json()['trace']['mode'], 'category_count')
+        self.assertEqual(self.client.get(url, {'type': 'line', 'x': 'Dept', 'y': 'Marks', 'agg': 'none'}).json()['trace']['mode'], 'raw')
+

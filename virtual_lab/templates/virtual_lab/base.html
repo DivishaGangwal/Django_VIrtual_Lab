@@ -1,38 +1,47 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Aim{% endblock %} · Django Virtual Lab</title>
   <!-- Bootstrap 5, Font Awesome 4.7 and GitHub-markdown CSS (cdnjs); Raleway + Open Sans (Google Fonts) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="{% static 'virtual_lab/css/design_system.css' %}">
   <link rel="stylesheet" href="{% static 'virtual_lab/css/lab_layout.css' %}">
   <link rel="stylesheet" href="{% static 'virtual_lab/css/simulation.css' %}">
   <link rel="stylesheet" href="{% static 'virtual_lab/css/pages.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
+
 <body class="vl-page" data-current-step="{{ current_step|default:1 }}">
 
   <header class="vl-header sticky-top">
     <nav class="vl-navbar" aria-label="Site">
-      <button type="button" class="vl-menu-toggle" id="menuToggle" aria-label="Show or hide the lab menu" aria-controls="labSidebar">
+      <button type="button" class="vl-menu-toggle" id="menuToggle" aria-label="Show or hide the lab menu"
+        aria-controls="labSidebar">
         <i class="fa fa-bars" aria-hidden="true"></i>
       </button>
       <a class="vl-brand" href="{% url 'virtual_lab:aim' %}">
         <span class="vl-brand-title">Django Virtual Lab</span>
-        <span class="vl-brand-tagline">KJSU · Computer Engineering</span>
+        <span class="vl-brand-tagline">KJSSE · Computer Engineering</span>
       </a>
     </nav>
   </header>
 
   <div class="vl-breadcrumbs" aria-label="Breadcrumb">
-    <span>KJSU</span>
+    <span>KJSSE</span>
     <i class="fa fa-angle-right" aria-hidden="true"></i>
     <span>Computer Engineering</span>
     <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -42,9 +51,9 @@
   <div class="vl-main">
     <nav class="vl-sidebar" id="labSidebar" aria-label="Lab steps">
       {% for step in lab_steps %}
-        <a href="{% url step.url_name %}"
-           class="lab-step-item{% if step.num < current_step %} completed{% elif step.num == current_step %} active{% endif %}"
-           {% if step.num == current_step %}aria-current="page"{% endif %}>{{ step.name }}</a>
+      <a href="{% url step.url_name %}"
+        class="lab-step-item{% if step.num < current_step %} completed{% elif step.num == current_step %} active{% endif %}"
+        {% if step.num == current_step %}aria-current="page" {% endif %}>{{ step.name }}</a>
       {% endfor %}
     </nav>
 
@@ -55,22 +64,25 @@
 
       <div class="lab-nav-footer no-print">
         {% for step in lab_steps %}
-          {% if step.num == current_step|add:"-1" %}
-            <a class="btn btn-secondary" href="{% url step.url_name %}"><i class="fa fa-angle-left" aria-hidden="true"></i> {{ step.name }}</a>
-          {% endif %}
+        {% if step.num == current_step|add:"-1" %}
+        <a class="btn btn-secondary" href="{% url step.url_name %}"><i class="fa fa-angle-left" aria-hidden="true"></i>
+          {{ step.name }}</a>
+        {% endif %}
         {% endfor %}
         {% if current_step == 1 %}<span></span>{% endif %}
         {% for step in lab_steps %}
-          {% if step.num == current_step|add:"1" %}
-            <a class="btn btn-primary" href="{% url step.url_name %}">Next: {{ step.name }} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-          {% endif %}
+        {% if step.num == current_step|add:"1" %}
+        <a class="btn btn-primary" href="{% url step.url_name %}">Next: {{ step.name }} <i class="fa fa-angle-right"
+            aria-hidden="true"></i></a>
+        {% endif %}
         {% endfor %}
       </div>
     </main>
   </div>
 
   <!-- Mobile menu (below 992px the sidebar is hidden and the menu button opens this) -->
-  <div class="modal fade vl-popup-menu" id="popupMenu" tabindex="-1" aria-labelledby="popupMenuTitle" aria-hidden="true">
+  <div class="modal fade vl-popup-menu" id="popupMenu" tabindex="-1" aria-labelledby="popupMenuTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
@@ -79,7 +91,8 @@
         </div>
         <div class="modal-body">
           {% for step in lab_steps %}
-            <a href="{% url step.url_name %}" class="vl-popup-link{% if step.num == current_step %} current-item{% endif %}">{{ step.name }}</a>
+          <a href="{% url step.url_name %}"
+            class="vl-popup-link{% if step.num == current_step %} current-item{% endif %}">{{ step.name }}</a>
           {% endfor %}
         </div>
       </div>
@@ -95,7 +108,7 @@
       </div>
       <div class="vl-footer-col">
         <span class="vl-footer-sect-name">Institute</span>
-        <span>KJSU</span>
+        <span>KJSSE</span>
         <span>Department of Computer Engineering</span>
       </div>
       <div class="vl-footer-col">
@@ -106,14 +119,16 @@
       </div>
     </div>
     <div class="vl-footer-bottom">
-      Django Virtual Lab · KJSU · Academic Year 2026–27<br>
+      Django Virtual Lab · KJSSE · Academic Year 2026–27<br>
       UI design inspired by the open-source Virtual Labs template
       (<a href="https://github.com/virtual-labs/ph3-lab-mgmt" rel="noopener">virtual-labs/ph3-lab-mgmt</a>)
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="{% static 'virtual_lab/js/lab_navigator.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>

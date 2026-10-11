@@ -19,20 +19,24 @@
 <!-- Pipeline tracker -->
 <section class="pipeline-visualizer-card" aria-label="Request pipeline">
   <div class="pipeline-header">
-    <h3 class="pipeline-title">⚡ Django Request → Response Pipeline</h3>
+    <h3 class="pipeline-title">How Django reads your CSV</h3>
     <span class="badge badge-slate" id="pipelineStatus">Idle</span>
   </div>
+  <p class="pipeline-hint">Load a file below. Then follow the 6 steps to see what Django does with it.</p>
   <div class="pipeline-nodes-track">
-    <div class="pipeline-node" data-node="1"><span class="pipeline-node-icon">🌐</span><span class="pipeline-node-name">Browser Upload</span><span class="pipeline-node-desc">FormData + CSRF</span></div>
+    <button type="button" class="pipeline-node" data-node="1"><span class="pipeline-node-name">1 Upload</span></button>
     <span class="pipeline-arrow">→</span>
-    <div class="pipeline-node" data-node="2"><span class="pipeline-node-icon">📥</span><span class="pipeline-node-name">request.FILES</span><span class="pipeline-node-desc">Form validation</span></div>
+    <button type="button" class="pipeline-node" data-node="2"><span class="pipeline-node-name">2 Decode</span></button>
     <span class="pipeline-arrow">→</span>
-    <div class="pipeline-node" data-node="3"><span class="pipeline-node-icon">🔤</span><span class="pipeline-node-name">Decode + Sniff</span><span class="pipeline-node-desc">bytes → str, delimiter</span></div>
+    <button type="button" class="pipeline-node" data-node="3"><span class="pipeline-node-name">3 Separator</span></button>
     <span class="pipeline-arrow">→</span>
-    <div class="pipeline-node" data-node="4"><span class="pipeline-node-icon">🐍</span><span class="pipeline-node-name">csv + statistics</span><span class="pipeline-node-desc">rows, types, stats</span></div>
+    <button type="button" class="pipeline-node" data-node="4"><span class="pipeline-node-name">4 Split</span></button>
     <span class="pipeline-arrow">→</span>
-    <div class="pipeline-node" data-node="5"><span class="pipeline-node-icon">📦</span><span class="pipeline-node-name">JsonResponse</span><span class="pipeline-node-desc">session + JSON</span></div>
+    <button type="button" class="pipeline-node" data-node="5"><span class="pipeline-node-name">5 Statistics</span></button>
+    <span class="pipeline-arrow">→</span>
+    <button type="button" class="pipeline-node" data-node="6"><span class="pipeline-node-name">6 Reply</span></button>
   </div>
+  <div id="pipelineInspector" class="sim-inspector is-hidden" aria-live="polite"></div>
 </section>
 
 <!-- Ingestion -->
@@ -124,7 +128,7 @@
         <label class="field-label" for="chartBins">Bins</label>
         <input id="chartBins" class="field-control" type="number" min="2" max="50" value="8">
       </div>
-      <div><button type="button" class="btn btn-primary" id="plotBtn" style="width:100%">Plot</button></div>
+      <div><button type="button" class="btn btn-primary" id="plotBtn" style="width:100%">Plot &amp; Explain</button></div>
     </form>
     <div id="chartNotice" aria-live="polite"></div>
     <div class="chart-canvas-wrap"><canvas id="chartCanvas" aria-label="Data chart" role="img"></canvas></div>
@@ -132,6 +136,7 @@
       <button type="button" class="btn btn-secondary btn-sm" id="downloadChartBtn" disabled>⬇ Download PNG</button>
       <span class="field-hint" id="chartRequestUrl"></span>
     </div>
+    <div id="chartExplainer" class="chart-explainer is-hidden"></div>
   </section>
 </div>
 </div>
@@ -144,4 +149,6 @@
 <script src="{% static 'virtual_lab/js/csv_uploader.js' %}"></script>
 <script src="{% static 'virtual_lab/js/dataset_explorer.js' %}"></script>
 <script src="{% static 'virtual_lab/js/chart_studio.js' %}"></script>
+<script src="{% static 'virtual_lab/js/simulation_stepper.js' %}"></script>
+<script src="{% static 'virtual_lab/js/chart_explainer.js' %}"></script>
 {% endblock %}

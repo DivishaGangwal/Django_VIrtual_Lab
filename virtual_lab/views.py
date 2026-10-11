@@ -21,8 +21,11 @@ from .services import (
     CSVParserService,
     SampleLoaderService,
     build_chart_data,
+    build_chart_trace,
+    build_ingest_trace,
     describe_dataset,
 )
+from .services.sample_loader import AVAILABLE_SAMPLES, DATA_SAMPLES_DIR
 
 SESSION_KEY = 'active_dataset'
 PREVIEW_ROWS = 10
@@ -164,13 +167,20 @@ def upload_csv_api(request: HttpRequest) -> JsonResponse:
         return JsonResponse({'status': 'error', 'message': ' '.join(errors)}, status=400)
 
     uploaded_file = form.cleaned_data['csv_file']
+    uploaded_file.seek(0)
+    raw_bytes = uploaded_file.read()  # kept only to explain the byte-level stage
+    uploaded_file.seek(0)
     decoded_text = CSVParserService.decode_file_stream(uploaded_file)
     parse_result = CSVParserService.parse_csv_content(decoded_text, max_rows=settings.LAB_MAX_ROWS)
     if parse_result.get('status') != 'success':
         return JsonResponse(parse_result, status=400)
 
     dataset = _store_dataset(request, uploaded_file.name, parse_result, source='upload')
-    return JsonResponse(_dataset_summary(dataset))
+    payload = _dataset_summary(dataset)
+    payload['trace'] = build_ingest_trace(
+        raw_bytes, uploaded_file.name, getattr(uploaded_file, 'content_type', '') or 'text/csv',
+        'upload', decoded_text, parse_result, dataset['stats'], request.session.session_key)
+    return JsonResponse(payload)
 
 
 @require_GET
@@ -183,6 +193,11 @@ def load_sample_api(request: HttpRequest) -> JsonResponse:
     dataset = _store_dataset(request, parse_result['sample_info']['filename'], parse_result, source='sample')
     payload = _dataset_summary(dataset)
     payload['sample_info'] = parse_result['sample_info']
+    raw_bytes = (DATA_SAMPLES_DIR / AVAILABLE_SAMPLES[sample_id]['filename']).read_bytes()
+    payload['trace'] = build_ingest_trace(
+        raw_bytes, parse_result['sample_info']['filename'], 'text/csv', 'sample',
+        CSVParserService.decode_file_stream(raw_bytes), parse_result, dataset['stats'],
+        request.session.session_key)
     return JsonResponse(payload)
 
 
@@ -229,6 +244,7 @@ def chart_data_api(request: HttpRequest) -> JsonResponse:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
     payload['status'] = 'success'
+    payload['trace'] = build_chart_trace(dataset['rows'], payload, chart_type, x, y_columns, agg, bins)
     return JsonResponse(payload)
 
 

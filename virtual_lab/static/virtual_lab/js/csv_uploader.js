@@ -77,9 +77,15 @@ class CSVUploader {
 
   async finishPipeline(data) {
     const wait = (ms) => new Promise(r => setTimeout(r, ms));
-    this.step(3, 'Decode + Sniff'); await wait(250);
-    this.step(4, 'csv + statistics'); await wait(250);
-    this.step(5, 'JsonResponse');
+    const stepper = (window.LabSimMode?.get() === 'stepper') && !!data.trace;
+    // The stepper (simulation_stepper.js) owns the teaching walkthrough. In
+    // step-by-step mode it reveals the results itself when the student finishes.
+    window.dispatchEvent(new CustomEvent('lab:ingest_ready', { detail: { data, gated: stepper } }));
+    if (stepper) return;
+    for (const [n, name] of [[2, 'Bytes → Text'], [3, 'Sniff + Stream'], [4, 'Tokenize'], [5, 'Types + Stats']]) {
+      this.step(n, name); await wait(150);
+    }
+    this.step(6, 'Session + JSON');
     window.dispatchEvent(new CustomEvent('lab:dataset_loaded', { detail: data }));
   }
 
@@ -102,14 +108,13 @@ class CSVUploader {
     }
 
     window.dispatchEvent(new CustomEvent('lab:pipeline_reset'));
-    this.step(1, 'Browser Upload');
+    this.step(1, 'HTTP Upload');
     const formData = new FormData();
     formData.append('csv_file', file);
 
     this.setBusy(true);
     try {
       this.showStatus('info', `Uploading ${file.name} and parsing it with Python's csv module…`);
-      this.step(2, 'request.FILES');
       const { ok, data } = await LabUtils.fetchJSON(this.urls.upload, {
         method: 'POST',
         headers: { 'X-CSRFToken': LabUtils.csrfToken() },
@@ -135,7 +140,6 @@ class CSVUploader {
     this.setBusy(true);
     try {
       this.showStatus('info', 'Loading sample dataset from the server…');
-      this.step(2, 'GET request');
       const url = `${this.urls.sample}?sample_id=${encodeURIComponent(sampleId)}`;
       const { ok, data } = await LabUtils.fetchJSON(url);
       if (ok && data.status === 'success') {

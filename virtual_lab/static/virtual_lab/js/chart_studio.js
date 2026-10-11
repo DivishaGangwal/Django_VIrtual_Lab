@@ -139,6 +139,7 @@
       }
       notices.replaceChildren();
       draw(data);
+      window.dispatchEvent(new CustomEvent('lab:chart_plotted', { detail: { payload: data, url: decodeURIComponent(url), chart, filename: dataset.filename } }));
     } catch (err) {
       notice(notices, 'error', '⚠️ Network error', err.message);
     }
@@ -158,6 +159,7 @@
       dataset = null;
       if (chart) { chart.destroy(); chart = null; }
       $('downloadChartBtn').disabled = true;
+      window.dispatchEvent(new CustomEvent('lab:chart_cleared'));
     });
 
     $('chartType').addEventListener('change', () => { if (dataset) { populateSelects(); plot(); } });

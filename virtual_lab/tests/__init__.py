@@ -1,3 +1,1 @@
-"""
-Tests package for Virtual Lab.
-"""
+# virtual_lab tests package
