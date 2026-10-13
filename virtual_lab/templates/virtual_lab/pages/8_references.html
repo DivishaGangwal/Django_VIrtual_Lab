@@ -1,0 +1,63 @@
+{% extends 'virtual_lab/base.html' %}
+{% block title %}References{% endblock %}
+{% block content_class %} markdown-body{% endblock %}
+{% block content %}
+{% include 'virtual_lab/partials/page_header.html' with title='References' tag='Further reading' description='Official documentation and books used to build this experiment. All links open the original source.' %}
+
+<h3>Python standard library</h3>
+<ol class="reference-list">
+  <li>Python Software Foundation. <em>csv — CSV File Reading and Writing</em>. Python 3 documentation.
+    <a href="https://docs.python.org/3/library/csv.html" target="_blank" rel="noopener">docs.python.org/3/library/csv.html</a></li>
+  <li>Python Software Foundation. <em>statistics — Mathematical statistics functions</em>. Python 3 documentation.
+    <a href="https://docs.python.org/3/library/statistics.html" target="_blank" rel="noopener">docs.python.org/3/library/statistics.html</a></li>
+  <li>Python Software Foundation. <em>io — Core tools for working with streams</em> (io.StringIO). Python 3 documentation.
+    <a href="https://docs.python.org/3/library/io.html" target="_blank" rel="noopener">docs.python.org/3/library/io.html</a></li>
+  <li>Python Software Foundation. <em>codecs — Codec registry and base classes</em> (the utf-8-sig encoding). Python 3 documentation.
+    <a href="https://docs.python.org/3/library/codecs.html" target="_blank" rel="noopener">docs.python.org/3/library/codecs.html</a></li>
+</ol>
+
+<h3>Django</h3>
+<ol class="reference-list" start="5">
+  <li>Django Software Foundation. <em>File Uploads</em>. Django documentation.
+    <a href="https://docs.djangoproject.com/en/stable/topics/http/file-uploads/" target="_blank" rel="noopener">docs.djangoproject.com/en/stable/topics/http/file-uploads/</a></li>
+  <li>Django Software Foundation. <em>How to use sessions</em>. Django documentation.
+    <a href="https://docs.djangoproject.com/en/stable/topics/http/sessions/" target="_blank" rel="noopener">docs.djangoproject.com/en/stable/topics/http/sessions/</a></li>
+  <li>Django Software Foundation. <em>How to use Django’s CSRF protection</em>. Django documentation.
+    <a href="https://docs.djangoproject.com/en/stable/howto/csrf/" target="_blank" rel="noopener">docs.djangoproject.com/en/stable/howto/csrf/</a></li>
+  <li>Django Software Foundation. <em>Request and response objects</em> (HttpRequest, JsonResponse). Django documentation.
+    <a href="https://docs.djangoproject.com/en/stable/ref/request-response/" target="_blank" rel="noopener">docs.djangoproject.com/en/stable/ref/request-response/</a></li>
+</ol>
+
+<h3>Charts and the browser</h3>
+<ol class="reference-list" start="9">
+  <li>Chart.js contributors. <em>Chart.js documentation</em>.
+    <a href="https://www.chartjs.org/docs/latest/" target="_blank" rel="noopener">chartjs.org/docs/latest/</a></li>
+  <li>Chart.js contributors. <em>Plugins</em> (used for the white PNG background).
+    <a href="https://www.chartjs.org/docs/latest/developers/plugins.html" target="_blank" rel="noopener">chartjs.org/docs/latest/developers/plugins.html</a></li>
+  <li>MDN Web Docs. <em>Canvas API</em>.
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API" target="_blank" rel="noopener">developer.mozilla.org/en-US/docs/Web/API/Canvas_API</a></li>
+  <li>MDN Web Docs. <em>Fetch API</em>.
+    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noopener">developer.mozilla.org/en-US/docs/Web/API/Fetch_API</a></li>
+</ol>
+
+<h3>Standards</h3>
+<ol class="reference-list" start="13">
+  <li>Shafranovich, Y. (2005). <em>RFC 4180: Common Format and MIME Type for Comma-Separated Values (CSV) Files</em>. IETF.
+    <a href="https://www.rfc-editor.org/rfc/rfc4180" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc4180</a></li>
+</ol>
+
+<h3>Books</h3>
+<ol class="reference-list" start="14">
+  <li>Wilke, C. O. (2019). <em>Fundamentals of Data Visualization: A Primer on Making Informative and Compelling Figures</em>. O’Reilly Media. Free online edition:
+    <a href="https://clauswilke.com/dataviz/" target="_blank" rel="noopener">clauswilke.com/dataviz/</a></li>
+  <li>Downey, A. B. (2014). <em>Think Stats: Exploratory Data Analysis in Python</em> (2nd ed.). O’Reilly Media. Free online edition:
+    <a href="https://greenteapress.com/wp/think-stats-2e/" target="_blank" rel="noopener">greenteapress.com/wp/think-stats-2e/</a></li>
+  <li>Tufte, E. R. (2001). <em>The Visual Display of Quantitative Information</em> (2nd ed.). Graphics Press. ISBN 978-0-9613921-4-7.</li>
+</ol>
+
+<h3>Template</h3>
+<ol class="reference-list" start="17">
+  <li>Virtual Labs project. <em>ph3-lab-mgmt</em>: open-source experiment page template that inspired this UI.
+    <a href="https://github.com/virtual-labs/ph3-lab-mgmt" target="_blank" rel="noopener">github.com/virtual-labs/ph3-lab-mgmt</a></li>
+</ol>
+{% endblock %}

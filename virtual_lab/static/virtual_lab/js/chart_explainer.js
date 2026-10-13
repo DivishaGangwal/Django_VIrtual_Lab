@@ -5,7 +5,7 @@
  *   V1 HTTP query  ·  V2 Python grouping/aggregation  ·  V3 Chart.js JSON  ·  V4 canvas pixel mapping
  */
 (() => {
-  const { el } = LabUtils;
+  const { el, text } = LabUtils;
   const $ = (id) => document.getElementById(id);
   const openState = { 1: false, 2: false, 3: false, 4: false };
   let openOuter = false;
@@ -16,7 +16,7 @@
   const chip = (text, cls = '') => el('span', { class: `sim-chip ${cls}`.trim(), text: String(text) });
   const table = (head, rows) => el('div', { class: 'lab-table-container' }, el('table', { class: 'sim-table' }, [
     el('thead', {}, el('tr', {}, head.map((h) => el('th', { text: h })))),
-    el('tbody', {}, rows.map((r) => el('tr', {}, r.map((c) => el('td', {}, c instanceof Node ? c : String(c)))))),
+    el('tbody', {}, rows.map((r) => el('tr', {}, r.map((c) => el('td', {}, c instanceof Node ? c : text(c)))))),
   ]));
   const list = (arr, n = 8) => `[${arr.slice(0, n).join(', ')}${arr.length > n ? ', …' : ''}]`;
 
@@ -183,7 +183,7 @@
           ['y_px', `${Math.round(area.bottom)} − (${yv} − ${ys.min}) / (${ys.max} − ${ys.min}) × ${Math.round(area.bottom - area.top)} = ${Math.round(lin)}`],
           ['Chart.js says', `scale.getPixelForValue(${yv}) = ${py}`], ['x_px', `${px}`]);
       }
-      out.replaceChildren(el('table', { class: 'sim-kv' }, rows.map(([k, val]) => el('tr', {}, [el('th', { text: k }), el('td', { text: String(val) })]))));
+      out.replaceChildren(el('table', { class: 'sim-kv' }, rows.map(([k, val]) => el('tr', {}, [el('th', { text: k }), el('td', { text: text(val) })]))));
     };
     slider.addEventListener('input', draw);
     slider.addEventListener('change', () => highlight(null));
@@ -236,5 +236,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('lab:chart_plotted', (e) => { ctx = e.detail; render(); });
     window.addEventListener('lab:chart_cleared', () => { ctx = null; render(); });
+    window.addEventListener('lab:simulation_reset', () => {
+      Object.keys(openState).forEach((k) => { openState[k] = false; });
+      openOuter = false;
+    });
   });
 })();

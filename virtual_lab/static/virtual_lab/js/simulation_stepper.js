@@ -4,25 +4,27 @@
  * Simple walkthrough: one stage at a time, one sentence of explanation,
  * one small thing to try, and an optional "Show the Python code" toggle.
  *
- * Events in:  lab:ingest_ready {data, gated}, lab:pipeline_goto, lab:pipeline_reset, lab:pipeline_error
+ * Events in:  lab:ingest_ready {data, gated}, lab:pipeline_goto, lab:pipeline_reset, lab:pipeline_error,
+ *             lab:simulation_reset (also forgets puzzle answers)
  * Events out: lab:pipeline_step {step,name}, lab:dataset_loaded (when results are revealed)
  */
 (() => {
-  const { el } = LabUtils;
+  const { el, text } = LabUtils;
   const LAST = 6;
   const $ = (id) => document.getElementById(id);
 
   // The guided walkthrough is always on; "Skip to results" bypasses it.
   window.LabSimMode = { get: () => 'stepper', set: () => {} };
 
-  const state = { data: null, trace: null, step: 1, revealed: false, showCode: false, showChallenge: false, attempts: {} };
+  const freshState = () => ({ data: null, trace: null, step: 1, revealed: false, showCode: false, showChallenge: false, attempts: {} });
+  const state = freshState();
 
   /* ---------- small DOM helpers ---------- */
-  const chip = (text, cls = '') => el('span', { class: `sim-chip ${cls}`.trim(), text: String(text) });
+  const chip = (value, cls = '') => el('span', { class: `sim-chip ${cls}`.trim(), text: text(value) });
   const pre = (text) => el('pre', { class: 'sim-pre', text });
   const note = (text, cls = '') => el('p', { class: `sim-note ${cls}`.trim(), text });
   const kv = (rows) => el('table', { class: 'sim-kv' }, rows.map(([k, v]) =>
-    el('tr', {}, [el('th', { text: k }), el('td', {}, v instanceof Node ? v : String(v))])));
+    el('tr', {}, [el('th', { text: k }), el('td', {}, v instanceof Node ? v : text(v))])));
   const btn = (text, onClick, cls = 'btn btn-secondary btn-sm', extra = {}) => {
     const b = el('button', { type: 'button', class: cls, text, ...extra });
     b.addEventListener('click', onClick);
@@ -251,6 +253,10 @@
   }
 
   const passedCount = () => Object.values(state.attempts).filter((a) => a.passed).length;
+  const updateCount = () => {
+    const cnt = document.getElementById('simChallengeCount');
+    if (cnt) cnt.textContent = `${passedCount()} of ${CHALLENGES.length} correct`;
+  };
 
   function challengeBox(i) {
     const ch = CHALLENGES[i - 1];
@@ -259,7 +265,7 @@
 
     const term = el('pre', { class: 'sim-terminal' });
     const hintBox = el('p', { class: 'sim-hintbox' });
-    const badge = el('span', { class: 'sim-badge-pass' });
+    const badge = el('span', { class: 'sim-verdict is-hidden', role: 'status', 'aria-live': 'polite' });
     const slotWrap = el('span', { class: 'sim-drop-slot-wrap' });
     const optionsPalette = el('div', { class: 'sim-chip-palette' });
 
@@ -267,20 +273,21 @@
       at.value = val;
       const r = judge(ch, at.value, state.trace, line);
       at.last = r;
-      if (r.status === 'ok') at.passed = true;
-      else at.fails += 1;
-      paint();
-      const cnt = document.getElementById('simChallengeCount');
-      if (cnt) cnt.textContent = `${passedCount()} of ${CHALLENGES.length} correct`;
+      at.passed = r.status === 'ok';
+      if (!at.passed) at.fails += 1;
+      paint(true);
+      updateCount();
     }
 
     function clearSlot() {
       at.value = '';
       at.last = null;
+      at.passed = false;
       paint();
+      updateCount();
     }
 
-    const paint = () => {
+    const paint = (fresh = false) => {
       const r = at.last;
       const val = at.value;
 
@@ -362,8 +369,17 @@
       hintBox.classList.toggle('is-hidden', !showHint);
       hintBox.textContent = showHint ? '💡 ' + r.hint : '';
 
-      badge.textContent = at.passed ? '✓ Correct!' : '';
-      badge.classList.toggle('is-hidden', !at.passed);
+      // Verdict for the latest attempt: green ✓ or red ✗ (wrong answers, errors and logic mistakes).
+      const verdict = r ? (r.status === 'ok' ? 'ok' : 'wrong') : null;
+      badge.textContent = verdict === 'ok' ? '✓ Correct!' : verdict === 'wrong' ? '✗ Incorrect' : '';
+      badge.classList.toggle('is-hidden', !verdict);
+      badge.classList.toggle('is-ok', verdict === 'ok');
+      badge.classList.toggle('is-wrong', verdict === 'wrong');
+      if (fresh && verdict) { // replay the pop animation so repeated attempts are visible
+        badge.classList.remove('is-flash');
+        void badge.offsetWidth;
+        badge.classList.add('is-flash');
+      }
     };
 
     paint();
@@ -415,7 +431,9 @@
       el('pre', { class: 'sim-code' }, st.code.map(([line, hl]) => el('div', { class: `sim-code-line${hl ? ' sim-code-hl' : ''}`, text: line }))),
     ]) : null;
 
-    box.replaceChildren(
+    // Optional parts are null when hidden; replaceChildren() would print them as
+    // the text "null", so they are filtered out first.
+    box.replaceChildren(...[
       el('div', { class: 'sim-insp-head' }, [
         el('span', { class: 'sim-step-count', text: `Step ${state.step} of ${LAST}` }),
         el('h4', { class: 'sim-insp-title', text: st.title }),
@@ -438,7 +456,7 @@
         ]),
       ]),
       codeBlock,
-    );
+    ].filter(Boolean));
   }
 
   /* ---------- wiring ---------- */
@@ -455,5 +473,6 @@
     const clear = () => { state.data = null; state.trace = null; render(); };
     window.addEventListener('lab:pipeline_reset', clear);
     window.addEventListener('lab:pipeline_error', clear);
+    window.addEventListener('lab:simulation_reset', () => { Object.assign(state, freshState()); render(); });
   });
 })();

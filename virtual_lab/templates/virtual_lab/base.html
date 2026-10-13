@@ -33,10 +33,28 @@
         aria-controls="labSidebar">
         <i class="fa fa-bars" aria-hidden="true"></i>
       </button>
+      <div class="vl-logos">
+        <img class="vl-logo vl-logo-somaiya" src="{% static 'virtual_lab/images/somaiya_logo.png' %}"
+          alt="Somaiya Vidyavihar University, K J Somaiya School of Engineering logo" height="48">
+        <img class="vl-logo vl-logo-vlab" src="{% static 'virtual_lab/images/vlab_logo.jpg' %}"
+          alt="Virtual Labs logo" height="48">
+      </div>
       <a class="vl-brand" href="{% url 'virtual_lab:aim' %}">
         <span class="vl-brand-title">Django Virtual Lab</span>
         <span class="vl-brand-tagline">KJSSE · Computer Engineering</span>
       </a>
+      <div class="vl-header-actions no-print">
+        <span class="vl-rating-avg" id="ratingAverage" data-average="{{ rating_summary.average|default_if_none:'' }}"
+          data-count="{{ rating_summary.count }}">{% if rating_summary.average is not None %}<span
+            class="vl-rating-star" aria-hidden="true">★</span> {{ rating_summary.average }}<span class="vl-rating-count">
+            ({{ rating_summary.count }})</span>{% else %}No ratings yet{% endif %}</span>
+        <button type="button" class="vl-action-btn" data-bs-toggle="modal" data-bs-target="#rateModal">
+          <i class="fa fa-star" aria-hidden="true"></i><span class="vl-action-label">Rate me</span>
+        </button>
+        <button type="button" class="vl-action-btn" data-bs-toggle="modal" data-bs-target="#bugModal">
+          <i class="fa fa-bug" aria-hidden="true"></i><span class="vl-action-label">Report bug</span>
+        </button>
+      </div>
     </nav>
   </header>
 
@@ -112,10 +130,8 @@
         <span>Department of Computer Engineering</span>
       </div>
       <div class="vl-footer-col">
-        <span class="vl-footer-sect-name">Team</span>
-        <span>Divisha Gangwal</span>
-        <span>Eshita</span>
-        <span>Manjushri Gandham</span>
+        <span class="vl-footer-sect-name">Credits</span>
+        <span>Developed by Divisha</span>
       </div>
     </div>
     <div class="vl-footer-bottom">
@@ -125,9 +141,14 @@
     </div>
   </footer>
 
+  {% include 'virtual_lab/partials/header_modals.html' %}
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastArea"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="{% static 'virtual_lab/js/lab_utils.js' %}"></script>
   <script src="{% static 'virtual_lab/js/lab_navigator.js' %}"></script>
+  <script src="{% static 'virtual_lab/js/feedback_widgets.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 

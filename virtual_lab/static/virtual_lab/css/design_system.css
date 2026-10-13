@@ -42,6 +42,19 @@
 
   /* Typography: Raleway for headings/content, Open Sans for UI text */
   --font-sans: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Type scale — every page uses these, so the same kind of text looks the same everywhere */
+  --fs-title: 1.8rem;      /* experiment title (one per page) */
+  --fs-page: 1.4rem;       /* page heading: "Aim of the Experiment", "Pretest", … */
+  --fs-section: 1.15rem;   /* section and card headings */
+  --fs-sub: 1.05rem;       /* sub-headings: questions, stepper stage titles */
+  --fs-body: 1.1rem;       /* reading text: paragraphs, lists, descriptions, answer options */
+  --fs-secondary: 0.95rem; /* tables, callouts, explanations, supporting text */
+  --fs-small: 0.85rem;     /* hints, notes, compact widget text */
+  --fs-label: 0.78rem;     /* uppercase labels and tags */
+  --text-body: #222222;
+  --text-heading: #333333;
+  --text-muted: #5c5c5c;
   --font-heading: 'Raleway', 'Open Sans', system-ui, sans-serif;
   --font-mono: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
 
@@ -129,7 +142,7 @@ a:hover {
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  font-size: 1rem;
+  font-size: var(--fs-body);
 }
 
 .lab-card-interactive:hover {
@@ -152,9 +165,9 @@ a:hover {
   align-items: center;
   gap: 0.6rem;
   font-family: var(--font-heading);
-  font-size: 1.2rem;
+  font-size: var(--fs-section);
   font-weight: 800;
-  color: var(--primary-600);
+  color: var(--text-heading);
 }
 
 .lab-card-icon {
@@ -284,7 +297,7 @@ a:hover {
   padding: 1rem 1.25rem;
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   margin: 1.5rem 0;
-  font-size: 1rem;
+  font-size: var(--fs-secondary);
 }
 
 .callout-title {
@@ -326,7 +339,7 @@ a:hover {
   border-collapse: collapse;
   text-align: left;
   font-family: var(--font-sans);
-  font-size: 0.92rem;
+  font-size: var(--fs-secondary);
 }
 
 .lab-table th,

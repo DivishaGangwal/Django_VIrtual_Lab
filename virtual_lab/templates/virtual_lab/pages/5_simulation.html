@@ -11,9 +11,23 @@
      data-has-dataset="{{ has_dataset|yesno:'1,0' }}">
 
 <div class="lab-page-header">
-  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 4 of 6</span><span class="badge badge-success">Hands-on</span></div>
-  <h1 class="lab-page-title">Simulation Workbench</h1>
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step {{ current_step }} of {{ lab_step_total }}</span><span class="badge badge-success">Hands-on</span></div>
+  <div class="lab-page-title-row">
+    <h2 class="lab-page-title">Simulation Workbench</h2>
+    <button type="button" class="btn btn-reset-sim" id="resetSimulationBtn" aria-controls="resetConfirm" aria-expanded="false">
+      <i class="fa fa-refresh" aria-hidden="true"></i> Reset Simulation
+    </button>
+  </div>
   <p class="lab-page-description">Load a CSV, inspect what Django parsed, read the statistics and build charts.</p>
+  <div id="resetConfirm" class="reset-confirm is-hidden" role="alertdialog" aria-labelledby="resetConfirmTitle" aria-describedby="resetConfirmText">
+    <div class="reset-confirm-title" id="resetConfirmTitle">Reset the simulation?</div>
+    <p id="resetConfirmText">This removes the loaded dataset from your session and clears the preview, statistics, chart, "Try it" steps and code puzzles.</p>
+    <div class="reset-confirm-actions">
+      <button type="button" class="btn btn-danger btn-sm" id="resetConfirmYes">Yes, reset</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="resetConfirmNo">Cancel</button>
+    </div>
+    <p class="reset-confirm-error is-hidden" id="resetConfirmError" role="alert"></p>
+  </div>
 </div>
 
 <!-- Pipeline tracker -->
@@ -39,25 +53,26 @@
   <div id="pipelineInspector" class="sim-inspector is-hidden" aria-live="polite"></div>
 </section>
 
-<!-- Ingestion -->
+<!-- Ingestion: two equal boxes (CSS grid, stretched items) -->
+{% csrf_token %}
+{{ upload_form.csv_file }}
 <div class="dropzone-container">
-  <div>
-    {% csrf_token %}
-    <div class="dropzone-box" id="csvDropzone" role="button" tabindex="0" aria-label="Upload a CSV file">
-      <span class="dropzone-icon">📂</span>
+  <div class="dropzone-box ingest-box" id="csvDropzone" role="button" tabindex="0" aria-label="Upload a CSV file: drop it here or press Enter to browse">
+    <span class="ingest-box-title">Upload a file</span>
+    <span class="dropzone-body">
+      <span class="dropzone-icon" aria-hidden="true">📂</span>
       <span class="dropzone-text-main">Drop a CSV file here or click to browse</span>
       <span class="dropzone-text-sub">.csv only · max 5 MB · comma, semicolon, tab or pipe delimited</span>
-    </div>
-    {{ upload_form.csv_file }}
+    </span>
   </div>
-  <div class="sample-picker-box">
+  <div class="sample-picker-box ingest-box">
     <div>
-      <h3>Or use a built-in sample</h3>
-      <label class="field-label" for="sampleDatasetSelect" style="margin-top:1rem">Sample dataset</label>
+      <h3 class="ingest-box-title">Or use a built-in sample</h3>
+      <label class="field-label" for="sampleDatasetSelect">Sample dataset</label>
       <select id="sampleDatasetSelect" class="sample-select-dropdown">
         {% for s in samples %}<option value="{{ s.id }}" data-description="{{ s.description }}">{{ s.name }}</option>{% endfor %}
       </select>
-      <p id="sampleDescription" style="font-size:0.9rem">{{ samples.0.description }}</p>
+      <p id="sampleDescription" class="ingest-box-desc">{{ samples.0.description }}</p>
     </div>
     <button type="button" class="btn btn-primary" id="loadSampleBtn">Load Sample</button>
   </div>
@@ -144,11 +159,11 @@
 
 {% block extra_js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{% static 'virtual_lab/js/lab_utils.js' %}"></script>
 <script src="{% static 'virtual_lab/js/pipeline_visualizer.js' %}"></script>
 <script src="{% static 'virtual_lab/js/csv_uploader.js' %}"></script>
 <script src="{% static 'virtual_lab/js/dataset_explorer.js' %}"></script>
 <script src="{% static 'virtual_lab/js/chart_studio.js' %}"></script>
 <script src="{% static 'virtual_lab/js/simulation_stepper.js' %}"></script>
 <script src="{% static 'virtual_lab/js/chart_explainer.js' %}"></script>
+<script src="{% static 'virtual_lab/js/simulation_reset.js' %}"></script>
 {% endblock %}

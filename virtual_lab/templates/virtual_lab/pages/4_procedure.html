@@ -2,13 +2,12 @@
 {% block title %}Procedure{% endblock %}
 {% block content_class %} markdown-body{% endblock %}
 {% block content %}
-<h2 class="page-name">Procedure</h2>
-<p>Follow these steps on the Simulation page.</p>
+{% include 'virtual_lab/partials/page_header.html' with title='Procedure' tag='Steps to follow' description='Follow these steps on the Simulation page.' %}
 
 <ol>
   <li>
     <strong>Load a dataset.</strong>
-    Drag a <code>.csv</code> file onto the upload box (max 5 MB) <strong>or</strong> pick a built-in sample and click <em>Load Sample</em>. Try the <em>Lab Sensor Log</em> sample to see missing values and a semicolon delimiter.
+    Drag a <code>.csv</code> file onto the upload box (max 5 MB; any other file type is rejected with a message) <strong>or</strong> pick a built-in sample and click <em>Load Sample</em>. <em>Reset Simulation</em> clears everything so you can start again. Try the <em>Lab Sensor Log</em> sample to see missing values and a semicolon delimiter.
   </li>
   <li>
     <strong>Watch the request pipeline.</strong>
@@ -31,8 +30,12 @@
     Open the Observations page. It is generated from your loaded dataset — print it or save it as PDF, and download the statistics as CSV.
   </li>
   <li>
-    <strong>Take the quiz.</strong>
-    Answer the 10 questions. Your score is graded on the server and saved.
+    <strong>Take the posttest.</strong>
+    Choose one or more difficulty levels (Beginner, Intermediate, Advanced) and answer the questions. Your answers are graded on the server and the attempt is saved.
+  </li>
+  <li>
+    <strong>Give feedback.</strong>
+    Check the References for further reading, then tell us what worked on the Feedback page.
   </li>
 </ol>
 

@@ -5,13 +5,20 @@
  *  - the menu button: on wide screens it shows/hides the left sidebar; below
  *    992px (where the sidebar is hidden) it opens the pop-up menu instead,
  *    like the Virtual Labs experiment pages;
- *  - keyboard shortcuts: Alt + ← / → moves between steps.
+ *  - keyboard shortcuts: Alt + ← / → moves between steps;
+ *  - hides a header logo whose image file is missing (instead of a broken icon).
  */
 document.addEventListener('DOMContentLoaded', () => {
   const BREAKPOINT_LG = 992;
   const toggleBtn = document.getElementById('menuToggle');
   const sidebar = document.getElementById('labSidebar');
   const popup = document.getElementById('popupMenu');
+
+  document.querySelectorAll('img.vl-logo').forEach((img) => {
+    const hide = () => img.classList.add('is-hidden');
+    if (img.complete && img.naturalWidth === 0) hide();
+    img.addEventListener('error', hide);
+  });
 
   toggleBtn?.addEventListener('click', () => {
     if (window.innerWidth < BREAKPOINT_LG) {

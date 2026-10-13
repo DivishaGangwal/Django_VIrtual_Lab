@@ -1,5 +1,6 @@
 /**
- * Shared helpers: safe DOM building (no innerHTML with user data), CSRF, notices.
+ * Shared helpers: safe DOM building (no innerHTML with user data), CSRF, notices,
+ * toasts and JSON POSTs. Loaded on every page by base.html.
  */
 window.LabUtils = (() => {
   /** el('div', {class: 'x', text: 'hi'}, [children]) — text is always set via textContent. */
@@ -51,11 +52,42 @@ window.LabUtils = (() => {
     return { ok: response.ok, status: response.status, data };
   }
 
+  /** POSTs a JSON body with the CSRF token. Resolves to {ok, status, data}. */
+  function postJSON(url, body) {
+    return fetchJSON(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
+      body: JSON.stringify(body),
+    });
+  }
+
+  /** Bootstrap toast in the bottom-right corner. type: 'success' | 'error'. */
+  function toast(type, message) {
+    const area = document.getElementById('toastArea');
+    if (!area) return;
+    const box = el('div', {
+      class: `toast vl-toast vl-toast-${type === 'error' ? 'error' : 'success'}`,
+      role: type === 'error' ? 'alert' : 'status', 'aria-live': type === 'error' ? 'assertive' : 'polite', 'aria-atomic': 'true',
+    }, el('div', { class: 'd-flex' }, [
+      el('div', { class: 'toast-body', text: `${type === 'error' ? '✗' : '✓'} ${message}` }),
+      el('button', { type: 'button', class: 'btn-close me-2 m-auto', 'data-bs-dismiss': 'toast', 'aria-label': 'Close' }),
+    ]));
+    area.appendChild(box);
+    box.addEventListener('hidden.bs.toast', () => box.remove());
+    if (window.bootstrap) bootstrap.Toast.getOrCreateInstance(box, { delay: 4500 }).show();
+    else box.classList.add('show');
+  }
+
+  /** Display text for a raw value: null/undefined/'' become '—', never "null"/"undefined". */
+  function text(value) {
+    return value === null || value === undefined || value === '' ? '—' : String(value);
+  }
+
   function fmt(value) {
     if (value === null || value === undefined || value === '') return '—';
     if (typeof value === 'number') return Number.isInteger(value) ? value.toLocaleString() : value.toLocaleString(undefined, { maximumFractionDigits: 3 });
     return String(value);
   }
 
-  return { el, csrfToken, notice, fetchJSON, fmt };
+  return { el, csrfToken, notice, fetchJSON, postJSON, toast, fmt, text };
 })();

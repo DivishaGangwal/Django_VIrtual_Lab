@@ -2,10 +2,11 @@
  * Dataset Explorer
  * Listens for `lab:dataset_loaded` and renders: metadata badges, preview table
  * with type tags and missing-value highlighting, and per-column statistics.
- * Also restores the session's dataset when the page is reopened.
+ * Also restores the session's dataset when the page is reopened, and empties
+ * everything again on `lab:simulation_reset`.
  */
 (() => {
-  const { el, fmt, fetchJSON, csrfToken } = LabUtils;
+  const { el, fmt, fetchJSON } = LabUtils;
   const MISSING = new Set(['', 'na', 'n/a', 'null', 'nan', 'none', '-']);
   const isMissing = (v) => v === null || v === undefined || MISSING.has(String(v).trim().toLowerCase());
 
@@ -125,6 +126,8 @@
     current = null;
     document.getElementById('noDatasetState').classList.remove('is-hidden');
     document.getElementById('datasetWorkspace').classList.add('is-hidden');
+    ['datasetFilename', 'datasetMeta', 'previewTable', 'columnPicker', 'columnStats']
+      .forEach(id => document.getElementById(id)?.replaceChildren());
     window.dispatchEvent(new CustomEvent('lab:dataset_cleared'));
   }
 
@@ -133,13 +136,7 @@
     if (!root) return;
 
     window.addEventListener('lab:dataset_loaded', (e) => show(e.detail));
-
-    document.getElementById('resetDatasetBtn')?.addEventListener('click', async () => {
-      await fetch(root.dataset.resetUrl, { method: 'POST', headers: { 'X-CSRFToken': csrfToken() }, credentials: 'same-origin' });
-      document.getElementById('uploadStatusNotice').replaceChildren();
-      window.dispatchEvent(new CustomEvent('lab:pipeline_reset'));
-      hide();
-    });
+    window.addEventListener('lab:simulation_reset', hide);
 
     // Restore the dataset already stored in the session (e.g. after visiting Theory).
     if (root.dataset.hasDataset === '1') {

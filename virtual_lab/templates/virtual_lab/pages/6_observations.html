@@ -1,11 +1,7 @@
 {% extends 'virtual_lab/base.html' %}
 {% block title %}Observations{% endblock %}
 {% block content %}
-<div class="lab-page-header">
-  <div class="lab-page-badge-row"><span class="badge badge-primary">Step 5 of 6</span><span class="badge badge-slate">Auto-generated</span></div>
-  <h1 class="lab-page-title">Observation Sheet</h1>
-  <p class="lab-page-description">Generated from the dataset in your current session.</p>
-</div>
+{% include 'virtual_lab/partials/page_header.html' with title='Observation Sheet' tag='Auto-generated' description='Generated from the dataset in your current session.' %}
 
 {% if not dataset %}
   <div class="lab-card empty-state">

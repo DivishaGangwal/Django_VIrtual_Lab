@@ -1,0 +1,39 @@
+{% extends 'virtual_lab/base.html' %}
+{% block title %}Feedback{% endblock %}
+{% block content %}
+{% include 'virtual_lab/partials/page_header.html' with title='Feedback' tag='About 1 minute' description='Tell us how this experiment worked for you. Only the overall rating and the recommendation are required.' %}
+
+<form id="feedbackForm" class="lab-card feedback-form" data-url="{% url 'virtual_lab:api_submit_feedback' %}" novalidate>
+  <label class="field-label" for="fbName">Name (optional)</label>
+  <input id="fbName" name="name" class="field-control" maxlength="100" placeholder="e.g. Aarav Sharma">
+
+  {% include 'virtual_lab/partials/star_input.html' with name='overall_rating' prefix='fb' legend='Overall rating' %}
+
+  <label class="field-label" for="fbUseful">What was most useful?</label>
+  <textarea id="fbUseful" name="most_useful" class="field-control" rows="3" maxlength="2000"
+    placeholder="e.g. The step-by-step pipeline and the code puzzles"></textarea>
+
+  <label class="field-label" for="fbImprove">What should we improve?</label>
+  <textarea id="fbImprove" name="to_improve" class="field-control" rows="3" maxlength="2000"
+    placeholder="e.g. More sample datasets"></textarea>
+
+  <fieldset>
+    <legend class="field-label">Would you recommend this lab to a classmate?</legend>
+    <div class="vl-radio-row">
+      {% for value, label in recommend_choices %}
+      <label class="vl-check"><input type="radio" name="would_recommend" value="{{ value }}" required> {{ label }}</label>
+      {% endfor %}
+    </div>
+  </fieldset>
+
+  <div class="form-error is-hidden" role="alert"></div>
+  <div><button type="submit" class="btn btn-primary btn-lg">Submit feedback</button></div>
+</form>
+
+<section id="feedbackThanks" class="lab-card empty-state is-hidden" role="status">
+  <div class="big">🙏</div>
+  <h3 class="section-title">Thank you for your feedback!</h3>
+  <p>Your response has been saved. It helps us improve this virtual lab.</p>
+  <a class="btn btn-secondary" href="{% url 'virtual_lab:aim' %}">Back to Aim</a>
+</section>
+{% endblock %}

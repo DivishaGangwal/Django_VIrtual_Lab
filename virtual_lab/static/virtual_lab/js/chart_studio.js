@@ -2,12 +2,40 @@
  * Chart Studio
  * Builds a query to /api/chart-data/, receives {labels, datasets} prepared by
  * Python on the server, and draws it with Chart.js.
+ * Every chart is painted on a solid white background with dark text, so the
+ * downloaded PNG is readable in any image viewer (Chart.js canvases are
+ * transparent by default, which many viewers show as black).
  */
 (() => {
   const { el, fetchJSON, notice } = LabUtils;
   const PALETTE = ['#2c99ce', '#ff6600', '#77bb41', '#3e6389', '#3ec1d5', '#b26100', '#8e44ad', '#5c5c5c', '#c62828', '#288ec8'];
+  const INK = '#1f1f1f';   // titles, legend, axis titles
+  const TICK = '#333333';  // tick labels
+  const GRID = '#d9d9d9';  // gridlines
+  const AXIS = '#8a8a8a';  // axis border lines
   let chart = null;
   let dataset = null;
+
+  /** Fills the canvas white before Chart.js draws anything (on screen and in the PNG export). */
+  const whiteBackground = {
+    id: 'whiteBackground',
+    beforeDraw(c) {
+      const { ctx, width, height } = c;
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.restore();
+    },
+  };
+
+  const axis = (opts) => ({
+    ...opts,
+    ticks: { color: TICK },
+    grid: { color: GRID },
+    border: { color: AXIS },
+    title: { ...opts.title, color: INK, font: { weight: 'bold' } },
+  });
 
   const $ = (id) => document.getElementById(id);
 
@@ -96,20 +124,22 @@
       };
     });
     const axes = multiColour ? {} : {
-      x: { type: payload.chart_type === 'scatter' ? 'linear' : 'category', title: { display: true, text: payload.x_label } },
-      y: { beginAtZero: payload.chart_type !== 'scatter', title: { display: true, text: payload.y_label } },
+      x: axis({ type: payload.chart_type === 'scatter' ? 'linear' : 'category', title: { display: true, text: payload.x_label } }),
+      y: axis({ beginAtZero: payload.chart_type !== 'scatter', title: { display: true, text: payload.y_label } }),
     };
     if (chart) chart.destroy();
     chart = new Chart($('chartCanvas'), {
       type: payload.chart_type,
       data: { labels: payload.labels, datasets },
+      plugins: [whiteBackground],
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 500 },
+        color: INK,
         plugins: {
-          legend: { display: multiColour || datasets.length > 1, position: multiColour ? 'right' : 'top' },
-          title: { display: true, text: `${dataset.filename} — ${datasets.map(d => d.label).join(', ')}`, font: { size: 14 } },
+          legend: { display: multiColour || datasets.length > 1, position: multiColour ? 'right' : 'top', labels: { color: INK } },
+          title: { display: true, text: `${dataset.filename} — ${datasets.map(d => d.label).join(', ')}`, color: INK, font: { size: 14 } },
         },
         scales: axes,
       },
@@ -158,8 +188,22 @@
     window.addEventListener('lab:dataset_cleared', () => {
       dataset = null;
       if (chart) { chart.destroy(); chart = null; }
+      // destroy() leaves Chart.js sizing attributes behind; restore the original <canvas>.
+      ['style', 'width', 'height'].forEach(a => $('chartCanvas').removeAttribute(a));
       $('downloadChartBtn').disabled = true;
       window.dispatchEvent(new CustomEvent('lab:chart_cleared'));
+    });
+    // Reset Simulation: also put the chart controls back to their initial values.
+    window.addEventListener('lab:simulation_reset', () => {
+      $('chartForm').reset();
+      $('chartX').replaceChildren();
+      $('chartY').replaceChildren();
+      $('chartY').multiple = true;
+      $('chartYField').classList.remove('is-hidden');
+      $('chartAggField').classList.remove('is-hidden');
+      $('chartBinsField').classList.add('is-hidden');
+      $('chartNotice').replaceChildren();
+      $('chartRequestUrl').textContent = '';
     });
 
     $('chartType').addEventListener('change', () => { if (dataset) { populateSelects(); plot(); } });

@@ -2,7 +2,7 @@
 {% block title %}Aim{% endblock %}
 {% block content_class %} markdown-body{% endblock %}
 {% block content %}
-<h2 class="page-name">Aim of the Experiment</h2>
+{% include 'virtual_lab/partials/page_header.html' with title='Aim of the Experiment' tag='Overview' %}
 <p>
   To build a Django web application that accepts a CSV file, parses it with Python's built-in
   <code>csv</code> module, computes descriptive statistics, and visualizes the data as interactive charts.
@@ -25,10 +25,10 @@
 
 <h3>Expected Outcome</h3>
 <p>By the end of this lab you will have loaded a dataset, read its statistics, produced at least two charts,
-  generated a printable observation sheet, and completed a 10-question assessment.</p>
+  generated a printable observation sheet, and completed a pretest and a posttest at the difficulty levels you choose.</p>
 
 <div class="callout">
   <div class="callout-title">💡 How to use this lab</div>
-  <div class="callout-content">Work through the six steps in order using the menu on the left. The Simulation (Step 4) is the hands-on part; your dataset stays loaded while you move between pages.</div>
+  <div class="callout-content">Work through the nine steps in order using the menu on the left: start with the Pretest, then the Procedure. The Simulation (Step 5) is the hands-on part; your dataset stays loaded while you move between pages.</div>
 </div>
 {% endblock %}

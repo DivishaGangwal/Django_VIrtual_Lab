@@ -10,7 +10,18 @@
  *  - Re-selecting the same file works (input value is reset).
  *  - The dropzone is keyboard accessible (Enter/Space).
  *  - Non-JSON server errors (e.g. 403 CSRF, 500) show a readable message.
+ *  - The picker accepts any file type; a non-CSV file gets a clear
+ *    "File not accepted" message (the server repeats the same check).
+ *  - `lab:simulation_reset` returns the inputs and messages to a fresh state.
  */
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+/** Same wording as forms.not_csv_message() on the server. */
+function notCsvMessage(filename) {
+  const name = filename.length <= 80 ? filename : filename.slice(0, 77) + '…';
+  return `✗ File not accepted: '${name}' is not a CSV file. Only .csv files are supported.`;
+}
+
 class CSVUploader {
   constructor(root) {
     this.root = root;
@@ -58,17 +69,31 @@ class CSVUploader {
     });
 
     this.loadSampleBtn?.addEventListener('click', () => this.loadSampleDataset(this.sampleSelect.value));
+    window.addEventListener('lab:simulation_reset', () => this.reset());
+  }
+
+  /** Back to the state of a fresh page load. */
+  reset() {
+    if (this.fileInput) this.fileInput.value = '';
+    this.dropzone?.classList.remove('dragover');
+    this.statusContainer?.replaceChildren();
+    if (this.sampleSelect) {
+      this.sampleSelect.selectedIndex = 0;
+      this.sampleSelect.dispatchEvent(new Event('change'));
+    }
+    this.setBusy(false);
   }
 
   showStatus(type, message) {
-    const titles = { error: '⚠️ Validation Notice', success: '✓ Ingestion Successful', info: '⏳ Working…' };
+    const titles = { error: '⚠️ Could not load the data', success: '✓ Ingestion Successful', info: '⏳ Working…' };
     LabUtils.notice(this.statusContainer, type, titles[type], message);
   }
 
   setBusy(busy) {
     this.busy = busy;
     if (this.loadSampleBtn) this.loadSampleBtn.disabled = busy;
-    this.dropzone?.setAttribute('aria-busy', String(busy));
+    if (busy) this.dropzone?.setAttribute('aria-busy', 'true');
+    else this.dropzone?.removeAttribute('aria-busy');
   }
 
   step(step, name) {
@@ -94,17 +119,20 @@ class CSVUploader {
     window.dispatchEvent(new CustomEvent('lab:pipeline_error', { detail: { message } }));
   }
 
+  /** Rejected before anything was sent: clear the old run, then show the error state. */
+  reject(message) {
+    window.dispatchEvent(new CustomEvent('lab:pipeline_reset'));
+    this.fail(message);
+  }
+
   async handleFileUpload(file) {
     if (this.busy) return;
 
     // Client-side checks are for quick feedback only; the server re-validates everything.
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      return this.fail('Invalid file format. Please select a .csv (Comma-Separated Values) file.');
-    }
-    if (file.size === 0) return this.fail('The selected file is empty (0 bytes).');
-    const maxBytes = 5 * 1024 * 1024;
-    if (file.size > maxBytes) {
-      return this.fail(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 5 MB limit.`);
+    if (!file.name.toLowerCase().endsWith('.csv')) return this.reject(notCsvMessage(file.name));
+    if (file.size === 0) return this.reject('The selected file is empty (0 bytes).');
+    if (file.size > MAX_UPLOAD_BYTES) {
+      return this.reject(`File size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the 5 MB limit.`);
     }
 
     window.dispatchEvent(new CustomEvent('lab:pipeline_reset'));

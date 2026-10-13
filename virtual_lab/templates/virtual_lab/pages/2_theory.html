@@ -2,8 +2,7 @@
 {% block title %}Theory{% endblock %}
 {% block content_class %} markdown-body{% endblock %}
 {% block content %}
-<h2 class="page-name">Theory</h2>
-<p>The concepts behind every stage of the CSV-to-chart pipeline.</p>
+{% include 'virtual_lab/partials/page_header.html' with title='Theory' tag='Concepts' description='The concepts behind every stage of the CSV-to-chart pipeline.' %}
 
 <h3>1. What is a CSV file?</h3>
 <p>A CSV file is plain text in which each line is a record and fields are separated by a <strong>delimiter</strong> — usually a comma, but semicolons (common in European locales), tabs and pipes are also used. The first line is normally a <strong>header row</strong> naming the columns.</p>

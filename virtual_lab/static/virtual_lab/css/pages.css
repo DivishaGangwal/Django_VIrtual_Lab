@@ -39,17 +39,17 @@
 }
 
 /* Form controls */
-.field-label { display: block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-500); margin-bottom: 0.3rem; }
+.field-label { display: block; font-family: var(--font-sans); font-size: var(--fs-label); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-500); margin-bottom: 0.3rem; }
 .field-control {
   width: 100%; padding: 0.6rem 0.75rem; border-radius: var(--radius-md);
-  border: 1px solid var(--slate-300); font: inherit; font-size: 0.93rem;
+  border: 1px solid var(--slate-300); font-family: var(--font-sans); font-size: var(--fs-secondary);
   background: var(--pure-white); color: var(--slate-800);
 }
 .field-control:focus { outline: none; border-color: var(--primary-600); box-shadow: 0 0 0 3px var(--primary-100); }
 select.field-control[multiple] { min-height: 7.5rem; }
 .controls-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; align-items: start; }
 .controls-row .btn { margin-top: 1.45rem; }
-.field-hint { font-size: 0.78rem; color: var(--slate-500); margin-top: 0.25rem; }
+.field-hint { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--text-muted); margin-top: 0.25rem; }
 
 /* Dataset explorer */
 .dataset-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
@@ -81,7 +81,7 @@ select.field-control[multiple] { min-height: 7.5rem; }
 
 /* Quiz */
 .quiz-question { margin-bottom: 1.25rem; }
-.quiz-question h4 { margin-bottom: 0.75rem; display: flex; gap: 0.5rem; }
+.quiz-question h4 { margin-bottom: 0.75rem; display: flex; gap: 0.5rem; font-size: var(--fs-sub); color: var(--text-heading); }
 .quiz-options { display: grid; gap: 0.5rem; }
 .quiz-option {
   display: flex; gap: 0.65rem; align-items: center; padding: 0.7rem 0.9rem;
@@ -92,7 +92,48 @@ select.field-control[multiple] { min-height: 7.5rem; }
 .quiz-option input { accent-color: var(--primary-600); }
 .quiz-option.correct { border-color: var(--success-600); background: var(--success-100); }
 .quiz-option.wrong { border-color: var(--danger-600); background: var(--danger-100); }
-.quiz-explanation { margin-top: 0.6rem; font-size: 0.9rem; }
+.quiz-explanation { margin-top: 0.6rem; font-size: var(--fs-secondary); padding: 0.5rem 0.75rem; border-radius: var(--radius-md); border-left: 4px solid var(--slate-300); }
+.quiz-explanation.is-correct { border-left-color: var(--success-600); background: var(--success-100); color: #2f5f17; }
+.quiz-explanation.is-wrong { border-left-color: var(--danger-600); background: var(--danger-100); color: #8e1b1b; }
+.quiz-option-letter { font-weight: 700; color: var(--slate-500); min-width: 1.1rem; }
+
+/* Pretest / Posttest: "Choose difficulty" checkboxes and level groups */
+.difficulty-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; }
+.difficulty-legend { float: left; width: auto; margin: 0 0.5rem 0 0; font-family: var(--font-heading); font-size: var(--fs-section); font-weight: 800; color: var(--text-heading); }
+.difficulty-option { font-weight: 600; }
+.field-hint-warn { color: var(--warning-600); font-weight: 600; }
+.assessment-level-title { display: flex; align-items: center; gap: 0.6rem; font-size: var(--fs-section); font-weight: 800; color: var(--text-heading); margin: 0.5rem 0 1rem; }
+.level-tag { display: inline-block; padding: 0.2rem 0.7rem; border-radius: var(--radius-full); font-family: var(--font-sans); font-size: var(--fs-label); font-weight: 700; }
+.level-tag-beginner { background: var(--success-100); color: var(--success-600); }
+.level-tag-intermediate { background: var(--warning-100); color: var(--warning-600); }
+.level-tag-advanced { background: var(--danger-100); color: var(--danger-600); }
+
+/* Checkbox / radio rows used by the forms */
+.vl-check { display: inline-flex; align-items: center; gap: 0.45rem; margin: 0 1rem 0.4rem 0; cursor: pointer; font-family: var(--font-sans); font-size: var(--fs-secondary); }
+.vl-check input { width: 1.05rem; height: 1.05rem; accent-color: var(--primary-600); }
+.vl-radio-row { display: flex; flex-wrap: wrap; }
+.form-error { margin-top: 0.75rem; padding: 0.5rem 0.75rem; border-radius: var(--radius-md); background: var(--danger-100); color: var(--danger-600); font-weight: 600; font-size: var(--fs-secondary); }
+
+/* 1–5 star picker (radios in reverse DOM order so hover fills stars to the left) */
+.star-input-group { margin: 0.75rem 0 1rem; }
+.star-input { display: inline-flex; flex-direction: row-reverse; gap: 0.15rem; }
+.star-input label { font-size: 2rem; line-height: 1; color: var(--slate-300); cursor: pointer; transition: color var(--transition-fast), transform var(--transition-fast); }
+.star-input label:hover,
+.star-input label:hover ~ label,
+.star-input input:checked ~ label { color: #f5a623; }
+.star-input input:focus-visible + label { outline: 3px solid var(--primary-100); outline-offset: 2px; border-radius: 4px; }
+.star-input label:hover { transform: scale(1.1); }
+
+/* Feedback page */
+.feedback-form { display: flex; flex-direction: column; gap: 0.35rem; max-width: 720px; }
+.feedback-form .field-label { margin-top: 0.75rem; }
+.feedback-form fieldset { margin-top: 0.25rem; }
+#feedbackThanks h3 { margin: 0.5rem 0; font-size: var(--fs-section); font-weight: 800; color: var(--text-heading); }
+.empty-state p { font-size: var(--fs-body); }
+
+/* References page */
+.reference-list li { margin-bottom: 0.6rem; }
+.reference-list a { word-break: break-word; }
 .score-ring { font-family: var(--font-heading); font-size: 3rem; font-weight: 800; color: var(--primary-700); line-height: 1; }
 
 /* Virtual Labs markdown-style content (Aim, Theory, Procedure).
@@ -100,34 +141,32 @@ select.field-control[multiple] { min-height: 7.5rem; }
    switch it to the Virtual Labs fonts, colours and heading styles. */
 .vl-content.markdown-body {
   font-family: var(--font-heading);
-  font-size: 1.2rem;
-  color: #000;
-  text-align: justify;
+  font-size: var(--fs-body);
+  color: var(--text-body);
   line-height: 1.6;
 }
 .vl-content.markdown-body .vl-experiment-title { border-bottom: 1px solid #eaecef; }
 .markdown-body h2 {
   color: var(--primary-600);
   font-family: var(--font-heading);
-  font-size: 1.4rem;
+  font-size: var(--fs-page);
   font-weight: 800;
   border-bottom: 0;
   padding-top: 2rem;
   padding-bottom: 0.5rem;
   margin-top: 0;
 }
-.markdown-body h2.page-name { padding-top: 0.5rem; }
 .markdown-body h3 {
-  color: #333;
+  color: var(--text-heading);
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: var(--fs-section);
   font-weight: 800;
-  text-decoration: underline;
+  line-height: 1.25;
   padding-top: 1rem;
   margin-top: 0;
 }
 .markdown-body p, .markdown-body li { color: inherit; }
-.markdown-body table { text-align: left; font-family: var(--font-sans); font-size: 0.95rem; display: table; width: 100%; }
+.markdown-body table { text-align: left; font-family: var(--font-sans); font-size: var(--fs-secondary); display: table; width: 100%; }
 .markdown-body table tr { border-top: 0; }
 .markdown-body .table-wrap { overflow-x: auto; margin-bottom: 16px; }
 .markdown-body .table-wrap table { margin-bottom: 0; }
@@ -141,7 +180,6 @@ select.field-control[multiple] { min-height: 7.5rem; }
 /* github-markdown-css styles every link inside .markdown-body; give buttons back their colours */
 .markdown-body a.btn { color: var(--bs-btn-color); background-color: var(--bs-btn-bg); text-decoration: none; }
 .markdown-body a.btn:hover { color: var(--bs-btn-hover-color); background-color: var(--bs-btn-hover-bg); }
-.markdown-body .callout { text-align: left; }
 .markdown-body .type-tag { margin-left: 0; }
 
 /* Print: Observations report */

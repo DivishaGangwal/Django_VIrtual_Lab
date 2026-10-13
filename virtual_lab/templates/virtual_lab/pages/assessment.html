@@ -1,0 +1,76 @@
+{% extends 'virtual_lab/base.html' %}
+{% load static %}
+{% block title %}{{ test_title }}{% endblock %}
+{% block content %}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step {{ current_step }} of {{ lab_step_total }}</span><span class="badge badge-slate">5 questions per level</span></div>
+  <h2 class="lab-page-title">{{ test_title }}</h2>
+  <p class="lab-page-description">
+    {% if test_type == 'pretest' %}Check what you already know about CSV files, Python and Django before starting the experiment.
+    {% else %}Test what you learned in this experiment: uploads, decoding, parsing, statistics, sessions and charts.{% endif %}
+    Grading happens on the server and your attempt is saved.
+  </p>
+</div>
+
+<form id="assessmentForm" data-submit-url="{% url 'virtual_lab:api_submit_assessment' %}" data-test-type="{{ test_type }}" class="stack" novalidate>
+  {% csrf_token %}
+  <section class="lab-card difficulty-card">
+    <fieldset class="difficulty-picker">
+      <legend class="difficulty-legend">Choose difficulty:</legend>
+      {% for level in levels %}
+      <label class="vl-check difficulty-option">
+        <input type="checkbox" name="levels" value="{{ level.key }}"{% if level.key in default_levels %} checked{% endif %}> {{ level.label }}
+      </label>
+      {% endfor %}
+    </fieldset>
+    <p class="field-hint" id="difficultyHint" aria-live="polite">Tick a level to show its questions. At least one level stays selected.</p>
+    <label class="field-label" for="studentName" style="margin-top:1rem">Your name (optional)</label>
+    <input id="studentName" name="student_name" class="field-control" maxlength="100" placeholder="e.g. Aarav Sharma" style="max-width:420px">
+  </section>
+
+  {% for level in levels %}
+  <section class="assessment-level{% if level.key not in default_levels %} is-hidden{% endif %}" data-level="{{ level.key }}" aria-label="{{ level.label }} questions">
+    <h3 class="assessment-level-title"><span class="level-tag level-tag-{{ level.key }}">{{ level.label }}</span> {{ level.questions|length }} questions</h3>
+    {% for q in level.questions %}
+    <fieldset class="lab-card quiz-question" data-qid="{{ q.id }}" style="border:var(--border-light)">
+      <legend class="visually-hidden">{{ level.label }} question {{ forloop.counter }}</legend>
+      <h4><span class="badge badge-primary">Q{{ forloop.counter }}</span> <span>{{ q.question }}</span></h4>
+      <div class="quiz-options">
+        {% for opt in q.options %}
+        <label class="quiz-option" data-index="{{ forloop.counter0 }}">
+          <input type="radio" name="{{ q.id }}" value="{{ forloop.counter0 }}"> <span class="quiz-option-letter">{% cycle 'A' 'B' 'C' 'D' %}.</span> <span>{{ opt }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <div class="quiz-explanation is-hidden"></div>
+    </fieldset>
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+  <div id="quizNotice" aria-live="polite"></div>
+  <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+    <button type="submit" class="btn btn-primary btn-lg" id="quizSubmitBtn">Submit answers</button>
+    <button type="button" class="btn btn-secondary btn-lg is-hidden" id="quizRetryBtn">Try again</button>
+  </div>
+</form>
+
+<section class="lab-card is-hidden" id="quizResult" style="margin-top:1.5rem;text-align:center">
+  <div class="score-ring" id="quizScore"></div>
+  <p id="quizScoreText" style="margin-top:0.5rem"></p>
+</section>
+
+{% if recent_attempts %}
+<section class="lab-card" style="margin-top:1.5rem">
+  <div class="lab-card-header"><div class="lab-card-title"><span class="lab-card-icon">🕘</span>Your recent {{ test_title|lower }} attempts</div></div>
+  <div class="lab-table-container"><table class="lab-table">
+    <thead><tr><th>When</th><th>Name</th><th>Levels</th><th>Score</th></tr></thead>
+    <tbody>{% for a in recent_attempts %}<tr><td>{{ a.created_at|date:"d M Y, H:i" }}</td><td>{{ a.student_name|default:"—" }}</td><td>{{ a.levels_display }}</td><td>{{ a.score }}/{{ a.total }} ({{ a.percentage }}%)</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'virtual_lab/js/assessment.js' %}"></script>
+{% endblock %}

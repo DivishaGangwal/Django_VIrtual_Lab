@@ -1,0 +1,6 @@
+{# Same heading block on every step page. Params: title, tag (optional badge), tag_class, description (optional). #}
+<div class="lab-page-header">
+  <div class="lab-page-badge-row"><span class="badge badge-primary">Step {{ current_step }} of {{ lab_step_total }}</span>{% if tag %}<span class="badge {{ tag_class|default:'badge-slate' }}">{{ tag }}</span>{% endif %}</div>
+  <h2 class="lab-page-title">{{ title }}</h2>
+  {% if description %}<p class="lab-page-description">{{ description }}</p>{% endif %}
+</div>

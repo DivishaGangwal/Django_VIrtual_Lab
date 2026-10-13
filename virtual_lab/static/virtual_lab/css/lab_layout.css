@@ -76,6 +76,65 @@
 
 .vl-brand:hover .vl-brand-title { color: var(--primary-800); }
 
+/* Institute + Virtual Labs logos (left of the title) */
+.vl-logos {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 1rem;
+  min-width: 0;
+}
+
+.vl-logo {
+  display: block;
+  height: 48px;          /* ~40–48px keeps the logos sharp; width follows the aspect ratio */
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+/* Rate me / Report bug + average rating (right side) */
+.vl-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  font-family: var(--font-sans);
+}
+
+.vl-rating-avg {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  white-space: nowrap;
+}
+
+.vl-rating-star { color: #f5a623; }
+.vl-rating-count { font-weight: 400; color: var(--slate-500); }
+
+.vl-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--vl-blue);
+  border-radius: 1em;
+  background: #fff;
+  color: var(--vl-blue);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.vl-action-btn:hover,
+.vl-action-btn:focus-visible { background: var(--vl-blue); color: #fff; }
+.vl-action-btn:focus-visible { outline: 3px solid var(--primary-100); outline-offset: 1px; }
+
 /* ---------- Breadcrumbs ---------- */
 .vl-breadcrumbs {
   display: flex;
@@ -129,23 +188,27 @@
   min-width: 0;                 /* lets wide tables scroll instead of stretching the page */
   padding: 0 3rem 2rem;
   font-family: var(--font-heading);
-  font-size: 1.2rem;
-  color: #000;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-body);
 }
 
-.vl-experiment-title {
+/* .vl-content prefix: also beats github-markdown's ".markdown-body h1" on the text pages */
+.vl-content .vl-experiment-title {
   text-align: center;
   font-family: var(--font-heading);
-  font-size: 1.8rem;
+  font-size: var(--fs-title);
   font-weight: 500;
+  line-height: 1.25;
   color: var(--vl-blue);
-  margin: 0.75rem 0 1.5rem;
+  margin: 0 0 1.5rem;          /* top space is padding: github-markdown zeroes the first child's margin-top */
+  padding-top: 0.75rem;
   padding-bottom: 0.6rem;
   border-bottom: 1px solid #eaecef;
   letter-spacing: 0;
 }
 
-/* Page heading used by Simulation / Observations / Quiz */
+/* Page heading block (partials/page_header.html) used by every step page */
 .lab-page-header {
   margin-bottom: 1.5rem;
   display: flex;
@@ -155,17 +218,21 @@
 
 .lab-page-badge-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
-.lab-page-title {
+.vl-content .lab-page-title {
   font-family: var(--font-heading);
-  font-size: 1.4rem;
+  font-size: var(--fs-page);
   font-weight: 800;
+  line-height: 1.25;
   color: var(--vl-blue);
   letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
-.lab-page-description {
-  font-size: 1.05rem;
-  color: #333;
+.vl-content .lab-page-description {
+  font-size: var(--fs-body);
+  color: var(--text-body);
   margin: 0;
 }
 
@@ -246,6 +313,16 @@
 /* Body is a flex column (design_system.css), so the footer sits at the bottom. */
 .vl-main { flex: 1 0 auto; }
 
+/* ---------- Header modals (Rate me / Report bug) + toasts ---------- */
+.vl-form-modal .modal-title { font-family: var(--font-heading); font-size: 1.35rem; color: var(--vl-blue); margin: 0; }
+.vl-form-modal .modal-body { font-family: var(--font-sans); font-size: 1rem; }
+.vl-form-modal .field-label { margin-top: 0.25rem; }
+
+.vl-toast { font-family: var(--font-sans); font-size: 0.95rem; border-left: 4px solid; }
+.vl-toast-success { border-left-color: var(--success-600); }
+.vl-toast-error { border-left-color: var(--danger-600); }
+.toast-container { z-index: 1090; }
+
 /* ---------- Narrow screens ---------- */
 @media (max-width: 991.98px) {
   .vl-sidebar { display: none; }
@@ -255,7 +332,24 @@
   .vl-brand-title { font-size: 1.5rem; }
   .vl-breadcrumbs, .vl-breadcrumbs .fa { font-size: 1.15rem; }
   .vl-breadcrumbs { padding: 1rem 1rem 0.75rem; }
-  .vl-content { padding: 0 1rem 1.5rem; font-size: 1.05rem; }
-  .vl-experiment-title { font-size: 1.45rem; }
+  :root { --fs-title: 1.45rem; --fs-page: 1.25rem; --fs-section: 1.08rem; --fs-body: 1.05rem; }
+  .vl-content { padding: 0 1rem 1.5rem; }
   .vl-footer-cols { grid-template-columns: 1fr; padding: 1rem 1.25rem; }
+  .vl-logos { margin-left: 0.5rem; gap: 0.5rem; }
+  .vl-logo { height: 40px; max-width: 120px; }
+  .vl-brand-tagline { display: none; }
+  .vl-header-actions { padding: 0 0.5rem; }
+}
+
+/* Phones: logos stay on the first row, title + actions wrap below */
+@media (max-width: 575.98px) {
+  .vl-navbar { flex-wrap: wrap; align-items: center; min-height: 0; padding: 0.4rem 0; row-gap: 0.4rem; }
+  .vl-menu-toggle { height: 2.75rem; width: 3rem; margin-left: 0.5rem; }
+  .vl-logo { height: 36px; max-width: 110px; }
+  .vl-brand { order: 3; flex: 1 1 auto; margin: 0; padding: 0 0.75rem; }
+  .vl-brand-title { font-size: 1.25rem; }
+  .vl-header-actions { order: 4; margin-left: auto; padding: 0 0.75rem; gap: 0.35rem; }
+  .vl-action-btn { padding: 0.4rem 0.6rem; }
+  .vl-action-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .vl-rating-count { display: none; }
 }

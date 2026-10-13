@@ -1,0 +1,12 @@
+{# 1–5 star picker made of radio buttons (keyboard accessible, works without JS). #}
+{# Params: name (input name), prefix (unique id prefix), legend. #}
+<fieldset class="star-input-group">
+  <legend class="field-label">{{ legend }}</legend>
+  <div class="star-input">
+    {% for n in "54321" %}
+    <input type="radio" id="{{ prefix }}Star{{ n }}" name="{{ name }}" value="{{ n }}" class="visually-hidden" required>
+    <label for="{{ prefix }}Star{{ n }}" title="{{ n }} star{{ n|pluralize }}"><span aria-hidden="true">★</span><span
+        class="visually-hidden">{{ n }} star{{ n|pluralize }}</span></label>
+    {% endfor %}
+  </div>
+</fieldset>
